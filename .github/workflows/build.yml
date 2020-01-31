@@ -1,9 +1,9 @@
 on: 
   push:
     branches:
-      - devops
+      - master
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -24,9 +24,9 @@ jobs:
           chmod 644 ./keys/.ssh/id_rsa.pub
           chmod 700 ./keys/.ssh
       - name: run ansible playbook
-        # uses: saubermacherag/ansible-playbook-docker-action@v1.2
-        # with:
-        #   playbookName: './devops/ansible/deploy.yml'
-        #   keyFile: "./keys/.ssh/id_rsa"
-        #   inventoryFile: "./devops/ansible/inventory/hosts"
-        run: ansible-playbook ./devops/ansible/deploy.yml -i ./devops/ansible/inventory/hosts --key-file ./keys/.ssh/id_rsa
+        uses: saubermacherag/ansible-playbook-docker-action@v1.2
+        with:
+          playbookName: './devops/ansible/deploy.yml'
+          keyFile: "./keys/.ssh/id_rsa"
+          inventoryFile: "./devops/ansible/inventory/hosts"
+        # run: ansible-playbook ./devops/ansible/deploy.yml -i ./devops/ansible/inventory/hosts --key-file ./keys/.ssh/id_rsa
