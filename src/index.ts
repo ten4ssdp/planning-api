@@ -1,8 +1,10 @@
-import * as express from 'express';
-const app: express.Application = express();
+import express from 'express';
+const app = express();
+const API_PORT = process.env.API_PORT || 1234
 
 app.get('/', (req, res) => {
-  res.send('ok');
+  res.send(`ok ${API_PORT}`);
+  console.log(API_PORT)
 });
 
-app.listen(1234, () => console.log('connected to server'));
+app.listen(API_PORT, () => console.log('connected to server'));
