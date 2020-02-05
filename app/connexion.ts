@@ -1,9 +1,11 @@
-var Sequelize = require('sequelize');
+(function(){
+    var Sequelize = require('sequelize');
+    
+    module.exports = new Sequelize(`postgres://${process.env.DB_ROOT_USERNAME}:${process.env.DB_ROOT_PASSWORD}@db:5432/ssdp`);
+})()
 
-console.log("ENV ______", process.env.DB_ROOT_USERNAME, process.env.DB_ROOT_PASSWORD);
 
-module.exports = new Sequelize(`postgres://admin:adminpwd@db:5432/ssdp`);
-//module.exports = new Sequelize(`postgres://${process.env.DB_ROOT_USERNAME}:${process.env.DB_ROOT_PASSWORD}@db:5432/ssdp`);
+
 
 // problème de connexion à la bdd 
 //  peut etre c'est TypeScript qui compile mal ce qui entraine des bugs dans les modules depuis index.ts
