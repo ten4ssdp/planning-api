@@ -30,19 +30,13 @@ services:
       - postgres:/data/postgres
 
   admin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: $PGADMIN_EMAIL
-      PGADMIN_DEFAULT_PASSWORD: $PGADMIN_DEFAULT_PASSWORD
-
+    image: adminer
     depends_on:
       - db
-    volumes:
-      - pgadmin:/root/.pgadmin
     networks:
       - ssdp_network
     ports:
-      - '${PGADMIN_PORT:-5050}:80'
+      - '${ADMINER_PORT:-5050}:8080'
     restart: always
 
 networks:
