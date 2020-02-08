@@ -1,6 +1,7 @@
 import userData from './fakeUsers.json';
 import sectorData from './fakeSectors.json';
 import hotelData from './fakeHotels.json';
+import { pipe } from '../utils';
 
 function formatUsersObject(users): [] {
   return users.map(user => ({
@@ -18,11 +19,58 @@ function getIntervenant(users): [] {
   return users.filter(isIntervenant);
 }
 
-function createSectors(sectors, users, hotels): [] {
+function isHisSector(entity: any[], sector: { id: string }): any[] {
+  return entity.filter((e): boolean => e.secteur === sector.id);
+}
+
+function shuffle(array): any[] {
+  const newArray = [...array];
+
+  for (let i = 0; i < newArray.length; i++) {
+    const r = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[r]] = [newArray[r], newArray[i]];
+  }
+
+  return newArray;
+}
+
+function createBinomes(hotels) {
+  return users => {
+    const binomes: any[] = [];
+    const usersCopy = users;
+    const max = (usersCopy.length - (usersCopy.length % 2)) / 2;
+
+    for (let i = 0; i < max; i++) {
+      const binome = {};
+      binome['users'] = usersCopy.splice(0, 2);
+      binome['hotels'] = hotels;
+      binomes.push(binome);
+    }
+
+    return binomes;
+  };
+}
+
+function shuffleUserAndCreateBinomesInSectors(sectors): {} {
+  return Object.keys(sectors).reduce((sectorsMutated, key) => {
+    const current = { ...sectors[key] };
+    current.binomes = pipe(
+      shuffle,
+      createBinomes(current.hotels),
+    )(current.users);
+
+    sectorsMutated[key] = {
+      ...current,
+    };
+
+    return sectorsMutated;
+  }, {});
+}
+
+function createSectors(sectors, users, hotels): {} {
   return sectors.reduce((sectors, sector) => {
-    const isHisSector = (entity): boolean => entity.secteur === sector.id;
-    const SectorUsers = users.filter(isHisSector);
-    const SectorHotels = hotels.filter(isHisSector);
+    const SectorUsers = isHisSector(users, sector);
+    const SectorHotels = isHisSector(hotels, sector);
 
     sectors[sector.id] = {
       users: SectorUsers,
@@ -34,13 +82,12 @@ function createSectors(sectors, users, hotels): [] {
 }
 
 function init(): void {
-  const intervenants = createSectors(
-    sectorData,
-    getIntervenant(formatUsersObject(userData)),
-    hotelData,
+  const users = pipe(formatUsersObject, getIntervenant)(userData);
+  const sectors = pipe(shuffleUserAndCreateBinomesInSectors)(
+    createSectors(sectorData, users, hotelData),
   );
 
-  console.log(JSON.stringify(intervenants, null, '\t'));
+  console.log(JSON.stringify(sectors, null, '\t'));
 }
 
 /**
