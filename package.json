@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "ts-node-dev --inspect=0.0.0.0:5858 --respawn --transpileOnly ./app/index.ts",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "start": "node server.ts",
+    "start": "node ./app/index.ts",
     "tsc": "tsc",
     "prod": "tsc && node ./build/server.js"
   },
