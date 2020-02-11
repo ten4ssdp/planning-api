@@ -2,7 +2,7 @@
   const express = require('express');
   const app = express();
   const db = require('./connexion');
-  const userRoutes = require('./routes/user');
+//  const userRoutes = require('./routes/user');
 
   db.authenticate()
     .then(() => console.log('Database connected ...'))
