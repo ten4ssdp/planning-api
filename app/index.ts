@@ -1,8 +1,8 @@
-(function(){
+(function() {
   const express = require('express');
   const app = express();
-  const db =  require('./connexion');
-  const userRoutes = require("./routes/user");
+  const db = require('./connexion');
+  const userRoutes = require('./routes/user');
 
   db.authenticate()
     .then(() => console.log('Database connected ...'))
@@ -10,14 +10,19 @@
 
   app.get('/api', (req, res) => {
     res.json({
-      message: "Bienvenue sur l'api du samu social de paris",
+      message: "Bienvenue sur l'api SSDP",
+      description:
+        "Elle contient l'ensemble des données utiles pour l'application du samu social de paris",
     });
   });
 
-  app.use('/api/user', userRoutes);
+  app.get('/api/user/', (req, res) => {
+    res.json([{ name: 'Toto' }]);
+  });
+
+  //app.use('/api/user', userRoutes);
 
   const PORT = process.env.PORT || '5000';
 
   app.listen(PORT, console.log('server started at port ' + PORT));
-
 })();
