@@ -3,7 +3,42 @@ import sectorData from './fakeSectors.json';
 import hotelData from './fakeHotels.json';
 import { pipe } from '../utils';
 
-function formatUsersObject(users): [] {
+interface User {
+  nom: string;
+  prenom: string;
+  fonction: string;
+  secteur: number;
+  adresse: string;
+}
+
+interface Hotel {
+  uid: number;
+  nom: string;
+  adresse: string;
+  cp: number;
+  secteur: number;
+  ville: string;
+  statut: number;
+  nbChambre: number;
+}
+
+interface Sector {
+  id: number;
+  name: string;
+}
+
+interface Binome {
+  users: User[];
+  hotels: Hotel[];
+}
+
+/**
+ * Format JSON User key
+ *
+ * @param {User[]} users
+ * @returns {User[]}
+ */
+function formatUsersObject(users: User[]): User[] {
   return users.map(user => ({
     nom: user['Nom'],
     prenom: user['Prénom'],
@@ -13,17 +48,36 @@ function formatUsersObject(users): [] {
   }));
 }
 
-function getIntervenant(users): [] {
+/**
+ * Get only User with `Intervenant Terrain` function
+ *
+ * @param {User[]} users
+ * @returns {User[]}
+ */
+function getIntervenant(users: User[]): User[] {
   const isIntervenant = (user): boolean =>
     user.fonction === 'Intervenant Terrain';
   return users.filter(isIntervenant);
 }
 
-function isHisSector(entity: any[], sector: { id: string }): any[] {
-  return entity.filter((e): boolean => e.secteur === sector.id);
+/**
+ * Retrieve User or Hotel from a given Sector
+ *
+ * @param {(Hotel[] | User[])} entity
+ * @param {Sector} sector
+ * @returns {(Hotel[] | User[])}
+ */
+function isHisSector(entity, sector: Sector): Hotel[] | User[] {
+  return entity.filter((e: Hotel | User) => e.secteur === sector.id);
 }
 
-function shuffle(array): any[] {
+/**
+ * Shuffle an array
+ *
+ * @param {*} array
+ * @returns {any[]}
+ */
+function shuffle(array: any[]): any[] {
   const newArray = [...array];
 
   for (let i = 0; i < newArray.length; i++) {
@@ -34,16 +88,23 @@ function shuffle(array): any[] {
   return newArray;
 }
 
-function createBinomes(hotels) {
-  return users => {
-    const binomes: any[] = [];
-    const usersCopy = users;
-    const max = (usersCopy.length - (usersCopy.length % 2)) / 2;
+/**
+ * Create Binomes
+ *
+ * @param {Hotel[]} hotels
+ * @returns
+ */
+function createBinomes(hotels: Hotel[]) {
+  return (users: User[]): Binome[] => {
+    const binomes: Binome[] = [];
+    const usersCopy: User[] = users;
+    const max: number = (usersCopy.length - (usersCopy.length % 2)) / 2;
 
     for (let i = 0; i < max; i++) {
-      const binome = {};
-      binome['users'] = usersCopy.splice(0, 2);
-      binome['hotels'] = hotels;
+      const binome: Binome = {
+        ['users']: usersCopy.splice(0, 2),
+        ['hotels']: hotels,
+      };
       binomes.push(binome);
     }
 
@@ -51,6 +112,12 @@ function createBinomes(hotels) {
   };
 }
 
+/**
+ * Create random binomes for each sector
+ *
+ * @param {*} sectors
+ * @returns {{}}
+ */
 function shuffleUserAndCreateBinomesInSectors(sectors): {} {
   return Object.keys(sectors).reduce((sectorsMutated, key) => {
     const current = { ...sectors[key] };
@@ -67,7 +134,15 @@ function shuffleUserAndCreateBinomesInSectors(sectors): {} {
   }, {});
 }
 
-function createSectors(sectors, users, hotels): {} {
+/**
+ * Create Sectors
+ *
+ * @param {*} sectors
+ * @param {User[]} users
+ * @param {Hotel[]} hotels
+ * @returns {{}}
+ */
+function createSectors(sectors, users: User[], hotels: Hotel[]): {} {
   return sectors.reduce((sectors, sector) => {
     const SectorUsers = isHisSector(users, sector);
     const SectorHotels = isHisSector(hotels, sector);
@@ -81,6 +156,10 @@ function createSectors(sectors, users, hotels): {} {
   }, {});
 }
 
+/**
+ * Init the algo
+ *
+ */
 function init(): void {
   const users = pipe(formatUsersObject, getIntervenant)(userData);
   const sectors = pipe(shuffleUserAndCreateBinomesInSectors)(
@@ -91,10 +170,8 @@ function init(): void {
 }
 
 /**
- * TODO: Creer les binomes
  * TODO: Ajouter les plages horaire des secteurs
- * TODO: Binomes par secteurs
- * TODO: Attribution des hotels aux teams
+ * TODO: Attribution des hotels aux binomes
  */
 
 try {
