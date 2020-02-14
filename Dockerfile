@@ -7,7 +7,9 @@ EXPOSE 5432
 # Node
 FROM node:latest
 
-COPY package.json .
+WORKDIR /usr/src
+
+COPY package*.json ./
 
 RUN npm install
 
