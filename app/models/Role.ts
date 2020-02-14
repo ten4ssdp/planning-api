@@ -5,8 +5,8 @@
 
     class Role extends Model {
         public id! : number;
-        public role_name! : string;
-        public role_level! : string; 
+        public name! : string;
+        public level! : string; 
     }
 
     Role.init({
@@ -15,12 +15,12 @@
             autoIncrement: true,
             primaryKey: true,
         },
-        role_name: {
+        name: {
             type: DataTypes.STRING(128),
             allowNull: false,
             notEmpty: true,
         },
-        role_level: {
+        level: {
             type: DataTypes.INTEGER,
             allowNull: false
         }
@@ -29,14 +29,6 @@
         modelName: 'role',
         sequelize
     })
-
-    sequelize.sync()
-    .then(() => Role.create({
-        role_name: "planifier",
-        role_level: 1 
-    }))
-    .then(role => console.log(role.toJSON()))
-    .catch(err => {throw err});
 
     module.exports = Role
 })()
