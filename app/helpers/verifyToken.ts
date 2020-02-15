@@ -11,4 +11,4 @@ function verify(req, res, next): void {
   }
 }
 
-module.exports = verify;
+export default verify;
