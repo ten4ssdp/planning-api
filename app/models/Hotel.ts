@@ -1,19 +1,18 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
-import Role from './Role';
 import Sector from './Sector';
-import TeamComposition from './TeamComposition';
-import Team from './Team';
+import Visit from './Visit';
 
-class User extends Model {
+class Hotel extends Model {
   public id!: number;
   public name!: string;
-  public lastname!: string;
-  public email!: string;
-  public password!: string;
+  public address!: string;
+  public zipCode!: number;
+  public city!: string;
+  public roomCount!: number;
 }
 
-User.init(
+Hotel.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -27,13 +26,6 @@ User.init(
         notEmpty: true,
       },
     },
-    lastname: {
-      type: DataTypes.STRING(128),
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
-    },
     address: {
       type: DataTypes.STRING(128),
       allowNull: false,
@@ -41,29 +33,37 @@ User.init(
         notEmpty: true,
       },
     },
-    email: {
-      type: DataTypes.STRING(128),
+    zipCode: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
       validate: {
-        isEmail: true,
+        notEmpty: true,
       },
     },
-    password: {
+    city: {
       type: DataTypes.STRING(128),
       allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    roomCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
   },
   {
     underscored: true, // cette option permet de nommer automatiquement les attributs sous la forme "nom_attribut" (user_name, user_password, etc)
-    modelName: 'user',
+    modelName: 'hotel',
     sequelize: db,
   },
 );
 
-// sauvegrade de valeur retournée par l'association, comme ça on peut la réutiliser plus tard
-User.belongsTo(Role);
-User.belongsTo(Sector);
-User.belongsToMany(Team, { through: TeamComposition });
+Hotel.belongsTo(Sector);
+Hotel.hasOne(Visit);
 
-export default User;
+export default Hotel;

@@ -1,20 +1,21 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
+import Parking from './Parking';
 
-class Role extends Model {
+class Vehicle extends Model {
   public id!: number;
-  public name!: string;
-  public level!: string;
+  public numberPlate!: string;
+  public type!: string;
 }
 
-Role.init(
+Vehicle.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
+    numberPlate: {
       type: DataTypes.STRING(128),
       allowNull: false,
       unique: true,
@@ -22,16 +23,21 @@ Role.init(
         notEmpty: true,
       },
     },
-    level: {
-      type: DataTypes.INTEGER,
+    type: {
+      type: DataTypes.STRING(128),
       allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
   },
   {
     underscored: true,
-    modelName: 'role',
+    modelName: 'vehicle',
     sequelize: db,
   },
 );
 
-export default Role;
+Vehicle.belongsTo(Parking);
+
+export default Vehicle;

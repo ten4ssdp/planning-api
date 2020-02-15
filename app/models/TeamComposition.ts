@@ -1,37 +1,32 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
 
-class Role extends Model {
+class TeamComposition extends Model {
   public id!: number;
-  public name!: string;
-  public level!: string;
+  public date!: Date;
 }
 
-Role.init(
+TeamComposition.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
-      type: DataTypes.STRING(128),
+    date: {
+      type: DataTypes.DATE,
       allowNull: false,
-      unique: true,
+      defaultValue: DataTypes.NOW,
       validate: {
         notEmpty: true,
       },
     },
-    level: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
   },
   {
     underscored: true,
-    modelName: 'role',
+    modelName: 'team_composition',
     sequelize: db,
   },
 );
 
-export default Role;
+export default TeamComposition;
