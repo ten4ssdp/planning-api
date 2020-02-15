@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "admin",
+    "level": 1
+  },
+  {
+    "id": 2,
+    "name": "Médiateur",
+    "level": 2
+  },
+  {
+    "id": 3,
+    "name": "Médiateur SAS",
+    "level": 2
+  },
+  {
+    "id": 4,
+    "name": "Intervenant Terrain",
+    "level": 2
+  }
+]

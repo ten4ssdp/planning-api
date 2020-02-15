@@ -1,13 +1,14 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
+import Sector from './Sector';
+import Vehicle from './Vehicle';
 
-class Role extends Model {
+class Team extends Model {
   public id!: number;
   public name!: string;
-  public level!: string;
 }
 
-Role.init(
+Team.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -17,21 +18,19 @@ Role.init(
     name: {
       type: DataTypes.STRING(128),
       allowNull: false,
-      unique: true,
       validate: {
         notEmpty: true,
       },
     },
-    level: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
   },
   {
     underscored: true,
-    modelName: 'role',
+    modelName: 'team',
     sequelize: db,
   },
 );
 
-export default Role;
+Team.belongsTo(Sector);
+Team.hasOne(Vehicle);
+
+export default Team;
