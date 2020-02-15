@@ -1,13 +1,12 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
 
-class Role extends Model {
+class Sector extends Model {
   public id!: number;
   public name!: string;
-  public level!: string;
 }
 
-Role.init(
+Sector.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -22,16 +21,12 @@ Role.init(
         notEmpty: true,
       },
     },
-    level: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
   },
   {
     underscored: true,
-    modelName: 'role',
+    modelName: 'sector',
     sequelize: db,
   },
 );
 
-export default Role;
+export default Sector;
