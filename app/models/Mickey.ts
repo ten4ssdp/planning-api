@@ -32,6 +32,8 @@ interface Binome {
   hotels: Hotel[];
 }
 
+const HOTELS_BY_DAY = 5;
+const USERS_BY_TEAM = 2;
 /**
  * Format JSON User key
  *
@@ -102,7 +104,7 @@ function createBinomes(hotels: Hotel[]) {
 
     for (let i = 0; i < max; i++) {
       const binome: Binome = {
-        ['users']: usersCopy.splice(0, 2),
+        ['users']: usersCopy.splice(0, USERS_BY_TEAM),
         ['hotels']: hotels,
       };
       binomes.push(binome);
@@ -110,6 +112,14 @@ function createBinomes(hotels: Hotel[]) {
 
     return binomes;
   };
+}
+
+function distributeHotelsToBinomes(hotels, binomes): {} {
+  const hotelsCopy = [...hotels];
+  return binomes.map(binome => {
+    binome.hotels = hotelsCopy.splice(0, HOTELS_BY_DAY);
+    return binome;
+  });
 }
 
 /**
@@ -121,11 +131,9 @@ function createBinomes(hotels: Hotel[]) {
 function shuffleUserAndCreateBinomesInSectors(sectors): {} {
   return Object.keys(sectors).reduce((sectorsMutated, key) => {
     const current = { ...sectors[key] };
-    current.binomes = pipe(
-      shuffle,
-      createBinomes(current.hotels),
-    )(current.users);
+    const binomes = pipe(shuffle, createBinomes(current.hotels))(current.users);
 
+    current.binomes = distributeHotelsToBinomes(current.hotels, binomes);
     sectorsMutated[key] = {
       ...current,
     };
