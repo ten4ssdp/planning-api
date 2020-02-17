@@ -64,6 +64,6 @@ Hotel.init(
 );
 
 Hotel.belongsTo(Sector);
-Hotel.hasOne(Visit);
+Hotel.hasMany(Visit);
 
 export default Hotel;

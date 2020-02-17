@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
 import Team from './Team';
+import Hotel from './Hotel';
 
 class Visit extends Model {
   public id!: number;
