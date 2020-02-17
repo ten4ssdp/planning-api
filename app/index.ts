@@ -5,6 +5,7 @@ import indexRoutes from './routes/index';
 import userRoutes from './routes/user';
 import vehicleRoutes from './routes/vehicle';
 import hotelRoutes from './routes/hotel';
+import sectorRoutes from './routes/sector';
 import Role from './models/Role';
 import User from './models/User';
 import Hotel from './models/Hotel';
@@ -89,5 +90,6 @@ app.use('/api', indexRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/vehicle', vehicleRoutes);
 app.use('/api/hotel', hotelRoutes);
+app.use('/api/sector', sectorRoutes);
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));
