@@ -4,6 +4,7 @@ import db from './connexion';
 import indexRoutes from './routes/index';
 import userRoutes from './routes/user';
 import vehicleRoutes from './routes/vehicle';
+import hotelRoutes from './routes/hotel';
 import Role from './models/Role';
 import User from './models/User';
 import Hotel from './models/Hotel';
@@ -87,5 +88,6 @@ db.sync()
 app.use('/api', indexRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/vehicle', vehicleRoutes);
+app.use('/api/hotel', hotelRoutes);
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));
