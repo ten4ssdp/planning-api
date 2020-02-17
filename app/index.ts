@@ -1,4 +1,5 @@
 import express from 'express';
+import bodyParser from 'body-parser';
 import db from './connexion';
 import indexRoutes from './routes/index';
 import userRoutes from './routes/user';
@@ -17,6 +18,10 @@ import moment from 'moment';
 
 const app = express();
 const PORT = process.env.PORT || '5000';
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(bodyParser.json());
 
 db.authenticate()
   .then(() => console.log('Database connected ...'))
@@ -75,4 +80,4 @@ db.sync()
 app.use('/api', indexRoutes);
 app.use('/api/user', userRoutes);
 
-app.listen(PORT, () => console.log(`server started at port ${PORT}`));
+app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));
