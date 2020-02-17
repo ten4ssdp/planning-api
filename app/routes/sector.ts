@@ -1,27 +1,17 @@
 import express from 'express';
-import Hotel from '../models/Hotel';
-import Visit from '../models/Visit';
 import Sector from '../models/Sector';
 
 const router = express.Router();
 
+/**
+ * TODO: Check associations
+ * TODO: add user & hotel
+ */
+
 router.get('/', async (req, res) => {
   try {
-    const hotels = await Hotel.findAll({
-      include: [
-        {
-          model: Visit,
-        },
-        {
-          model: Sector,
-        },
-      ],
-      order: [
-        ['name', 'ASC'],
-        [Visit, 'date', 'ASC NULLS FIRST'],
-      ],
-    });
-    res.send(hotels);
+    const sectors = await Sector.findAll();
+    res.send(sectors);
   } catch (error) {
     res.header(400).send({ error });
   }
@@ -31,10 +21,10 @@ router.get('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const hotel = await Hotel.findByPk(req.params.id);
-    if (!hotel) throw new Error(`ID ${req.params.id} does not exist`);
+    const sector = await Sector.findByPk(req.params.id);
+    if (!sector) throw new Error(`ID ${req.params.id} does not exist`);
 
-    res.send(hotel);
+    res.send(sector);
   } catch (error) {
     res.header(400).send({ error: error.message });
   }
@@ -42,7 +32,7 @@ router.get('/:id(\\d+)', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const [hotel] = await Hotel.upsert(
+    const [sector] = await Sector.upsert(
       {
         ...req.body,
       },
@@ -52,7 +42,7 @@ router.post('/', async (req, res) => {
       },
     );
 
-    res.send(hotel);
+    res.send(sector);
   } catch (error) {
     res.header(400).send({ error: error.message });
   }
@@ -62,15 +52,15 @@ router.delete('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const hotel = await Hotel.findByPk(req.params.id);
-    if (!hotel) throw new Error(`ID ${req.params.id} does not exist`);
+    const sector = await Sector.findByPk(req.params.id);
+    if (!sector) throw new Error(`ID ${req.params.id} does not exist`);
 
-    const isDeleted = await Hotel.destroy({
+    const isDeleted = await Sector.destroy({
       where: { id: req.params.id },
     });
     if (!isDeleted) throw new Error(`ID ${req.params.id} not delete`);
 
-    res.send(hotel);
+    res.send(sector);
   } catch (error) {
     res.header(400).send({ error: error.message });
   }
