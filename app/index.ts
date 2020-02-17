@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import db from './connexion';
 import indexRoutes from './routes/index';
 import userRoutes from './routes/user';
+import vehicleRoutes from './routes/vehicle';
 import Role from './models/Role';
 import User from './models/User';
 import Hotel from './models/Hotel';
@@ -13,15 +14,15 @@ import rolesJSON from './models/json/roles.json';
 import usersJSON from './models/json/users.json';
 import hotelsJSON from './models/json/hotels.json';
 import visitsJSON from './models/json/visits.json';
+import vehiclesJSON from './models/json/vehicles.json';
 import kebabCase from 'lodash.kebabCase';
 import moment from 'moment';
+import Vehicle from './models/Vehicle';
 
 const app = express();
 const PORT = process.env.PORT || '5000';
 
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(bodyParser.json());
+app.use(bodyParser());
 
 db.authenticate()
   .then(() => console.log('Database connected ...'))
@@ -71,6 +72,12 @@ db.sync()
         rate: parseFloat(visit.rate.toString().replace(',', '.')),
       });
     });
+
+    vehiclesJSON.map(vehicle => {
+      Vehicle.create({
+        ...vehicle,
+      });
+    });
   })
   .catch(err => {
     throw err;
@@ -79,5 +86,6 @@ db.sync()
 // routes
 app.use('/api', indexRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/vehicle', vehicleRoutes);
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));
