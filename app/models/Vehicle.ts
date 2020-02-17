@@ -21,6 +21,7 @@ Vehicle.init(
       unique: true,
       validate: {
         notEmpty: true,
+        is: /[a-zA-z]{2}-\d{3}-[a-zA-z]{2}/,
       },
     },
     type: {
