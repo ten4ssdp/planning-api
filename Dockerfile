@@ -6,7 +6,7 @@ EXPOSE 5432
 # Node
 FROM node:latest
 
-WORKDIR /usr/src
+WORKDIR /app
 
 COPY package*.json ./
 
