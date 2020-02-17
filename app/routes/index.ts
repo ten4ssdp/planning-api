@@ -1,37 +1,17 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import user from '../models/User';
+import User from '../models/User';
+import verifyToken from '../helpers/verifyToken';
+import verifyCredentials from '../helpers/verifyCredentials';
 
 const router = express.Router({ mergeParams: true });
 
-async function verifyCredentials(req, res, next): void {
-  console.log(req.params);
-  // let found = user.findOne({
-  //   where: {
-  //     email: req.params.email,
-  //     password: req.params.password,
-  //   }
-  // });
-  res.send('oui');
-  return;
-  if (found) {
-    req.user = found;
-    next();
-  } else {
-    // mauvais credentials
-    req.status(401).send('Email ou Mot de Passe incorrect.');
-  }
-}
-
 // Générer un token
-router.post('/login', verifyCredentials, async function(req, res) {
-  //console.log(req.user)
-  return;
+router.post('/login', verifyCredentials, (req, res) => {
   try {
     jwt.sign(
       {
-        email: req.params.email,
-        password: req.params.password,
+        ...req.user,
       },
       'secretKey',
       { expiresIn: '24h' },
@@ -43,7 +23,10 @@ router.post('/login', verifyCredentials, async function(req, res) {
         }
       },
     );
-  } catch (err) {}
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 });
 
 // Index de l'api

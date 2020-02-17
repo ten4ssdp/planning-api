@@ -3,7 +3,6 @@ FROM postgres as db
 
 EXPOSE 5432
 
-
 # Node
 FROM node:latest
 
