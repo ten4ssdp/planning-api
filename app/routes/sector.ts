@@ -45,14 +45,30 @@ router.get('/:id(\\d+)', async (req, res) => {
   }
 });
 
+router.put('/:id(\\d+)', async (req, res) => {
+  try {
+    if (!req.params.id) throw new Error('No ID');
+
+    const sector = await Sector.update({ ...req.body },{
+      where: { id: req.params.id },
+      returning: true,
+      validate: true
+    });
+    if (!sector[0]) throw new Error(`ID ${req.params.id} does not exist`);
+
+    res.send(sector);
+  } catch (error) {
+    res.header(400).send({ error: error.message });
+  }
+})
+
 router.post('/', async (req, res) => {
   try {
-    const [sector] = await Sector.upsert(
+    const sector = await Sector.create(
       {
         ...req.body,
       },
       {
-        returning: true,
         validate: true,
       },
     );

@@ -37,14 +37,30 @@ router.get('/:id(\\d+)', async (req, res) => {
   }
 });
 
+router.put('/:id(\\d+)', async (req, res) => {
+  try {
+    if (!req.params.id) throw new Error('No ID');
+
+    const vehicle = await Vehicle.update({ ...req.body },{
+      where: { id: req.params.id },
+      returning: true,
+      validate: true
+    });
+    if (!vehicle[0]) throw new Error(`ID ${req.params.id} does not exist`);
+
+    res.send(vehicle);
+  } catch (error) {
+    res.header(400).send({ error: error.message });
+  }
+})
+
 router.post('/', async (req, res) => {
   try {
-    const [vehicle] = await Vehicle.upsert(
+    const vehicle = await Vehicle.create(
       {
         ...req.body,
       },
       {
-        returning: true,
         validate: true,
       },
     );

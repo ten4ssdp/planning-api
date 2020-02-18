@@ -42,13 +42,11 @@ router.get('/:id(\\d+)', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const [
-      hotel] = await Hotel.upsert(
+    const hotel = await Hotel.create(
       {
         ...req.body,
       },
       {
-        returning: true,
         validate: true,
       },
     );
@@ -58,6 +56,23 @@ router.post('/', async (req, res) => {
     res.header(400).send({ error: error.message });
   }
 });
+
+router.put('/:id(\\d+)', async (req, res) => {
+  try {
+    if (!req.params.id) throw new Error('No ID');
+
+    const hotel = await Hotel.update({ ...req.body },{
+      where: { id: req.params.id },
+      returning: true,
+      validate: true
+    });
+    if (!hotel[0]) throw new Error(`ID ${req.params.id} does not exist`);
+
+    res.send(hotel);
+  } catch (error) {
+    res.header(400).send({ error: error.message });
+  }
+})
 
 router.delete('/:id(\\d+)', async (req, res) => {
   try {
