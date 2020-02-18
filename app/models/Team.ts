@@ -22,6 +22,14 @@ Team.init(
         notEmpty: true,
       },
     },
+    date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      validate: {
+        notEmpty: true,
+      },
+    },
   },
   {
     underscored: true,
