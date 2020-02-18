@@ -49,19 +49,17 @@ router.post('/create', (req, res) => {
 });
 
 // Récupérer la liste des users (par défaut)
-router.get('/', async (req, res) =>
- {
-  let users: User[];
-  let page: string = req.query.page || '0';
-  let pageSize: string = req.query.pageSize || '20';
+router.get('/', async (req, res) => {
+  const page: string = req.query.page || '0';
+  const pageSize: string = req.query.pageSize || '20';
 
-    users = await User.findAndCountAll({
-      ...paginate(parseInt(page), parseInt(pageSize)),
-    });
+  const users: User[] = await User.findAndCountAll({
+    ...paginate(parseInt(page), parseInt(pageSize)),
+  });
 
-    res.send(users);
+  res.send(users);
 
-    return users;
+  return users;
 });
 
 export default router;
