@@ -79,7 +79,7 @@ export const getHotelsAndVisits = async (): Promise<any> => {
     }, {});
 };
 
-export const createBinomesBySector = sectors => {
+export const createTeamsBySector = sectors => {
   Object.keys(sectors).map(async key => {
     const users = [...sectors[key]];
     const teamsCount = (users.length - (users.length % 2)) / 2;
@@ -88,8 +88,10 @@ export const createBinomesBySector = sectors => {
       const teamName = `team${i + 1} ${key}`;
       const binome = users.splice(0, USERS_BY_TEAM);
       const sectorId = binome[0].sectorId;
+      const date = new Date();
       const team = await Team.create({
         name: teamName,
+        date,
         sectorId,
       });
       binome.map(async ({ id: userId }) => {
@@ -132,25 +134,86 @@ export const getTeamsGroupedBySector = async () => {
 };
 
 export const dispatchHotelsToTeams = (teams, hotels: Hotel[]) => {
-  hotels = hotels.slice(0, WEEK_DAYS * VISITS_BY_DAY);
+  hotels = hotels.slice(0, WEEK_DAYS * (VISITS_BY_DAY * teams.length));
   let visits: any = [];
-  while (hotels.length > 0) {
-    const hotel = hotels.shift();
-    console.log(hotel);
-    visits = [
-      ...visits,
-      ...teams.map(team => ({
-        teamId: team.id,
-        hotelId: hotel?.id,
-      })),
-    ];
+  if (hotels.length) {
+    while (hotels.length > 0) {
+      visits = [
+        ...visits,
+        ...teams.map(team => {
+          const hotel = hotels.shift();
+          return {
+            teamId: team?.id,
+            hotelId: hotel?.id,
+          };
+        }),
+      ];
+    }
   }
+  return visits.reduce((mutatedVisits, visit) => {
+    return {
+      ...mutatedVisits,
+      [visit.teamId]: [...(mutatedVisits[visit.teamId] || []), visit.hotelId],
+    };
+  }, {});
+};
+
+/**
+ * Returns planned visits grouped by sectors
+ * @param hotels hotels grouped by sectors
+ * @param teams teams grouped by sectors
+ */
+export const getVisits = async (hotels, teams) => {
+  const sectors = await Sector.findAll({
+    group: ['sector.id'],
+  }).map(sector => sector.name);
+  const visits = sectors.reduce((sectorsMutated, sectorName) => {
+    const sectorsHotel = hotels[sectorName];
+    const sectorsTeams = teams[sectorName];
+    return {
+      ...sectorsMutated,
+      [sectorName]: {
+        ...(sectorsMutated[sectorName] || []),
+        ...dispatchHotelsToTeams(sectorsTeams, sectorsHotel),
+      },
+    };
+  }, {});
   return visits;
+};
+
+/**
+ * Create visits into DB
+ * @param visits visits grouped by sectors and teams
+ */
+export const createVisits = async visits => {
+  const createVisit = async (hotelId, teamId, date): Promise<any> => {
+    await Visit.create({
+      teamId,
+      hotelId,
+      date,
+    });
+  };
+  const sectorsNames = Object.keys(visits);
+  const date = new Date();
+  sectorsNames.map(sectorName => {
+    const teams = Object.keys(visits[sectorName]);
+    teams.map(teamId => {
+      visits[sectorName][teamId].map(hotelId =>
+        createVisit(hotelId, teamId, date),
+      );
+    });
+  });
 };
 
 async function init(): Promise<any> {
   const sectors = await getUsersBySector();
-  createBinomesBySector(sectors);
+  createTeamsBySector(sectors);
+
+  const hotels = await getHotelsAndVisits();
+  const teams = await getTeamsGroupedBySector();
+  const visits = await getVisits(hotels, teams);
+  createVisits(visits);
+
   return { sectors };
 }
 

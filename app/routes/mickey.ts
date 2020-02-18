@@ -7,6 +7,8 @@ import Mickey, {
   getHotelsAndVisits,
   dispatchHotelsToTeams,
   getTeamsGroupedBySector,
+  getVisits,
+  createVisits,
 } from '../Mickey';
 import Team from '../models/Team';
 import Visit from '../models/Visit';
@@ -72,13 +74,12 @@ router.get('/teams', async (req, res) => {
   res.send(teams);
 });
 router.get('/visits', async (req, res) => {
-  Mickey.init();
-  const hotels = await getHotelsAndVisits();
-  const teams = await getTeamsGroupedBySector();
-  const firstSectorHotels = hotels[Object.keys(hotels)[0]];
-  const firstSectorTeams = teams[Object.keys(teams)[0]];
-  console.log(teams[Object.keys(teams)[0]]);
-  const visits = dispatchHotelsToTeams(firstSectorTeams, firstSectorHotels);
+  const visits = await Visit.findAll({
+    where: {
+      status: 0,
+    },
+    order: ['date'],
+  });
   res.send(visits);
 });
 router.get('/main', (req, res) => {
