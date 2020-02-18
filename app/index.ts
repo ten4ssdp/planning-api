@@ -36,69 +36,60 @@ db.authenticate()
   .then(() => console.log('Database connected ...'))
   .catch(err => console.log('Unable to connect to the database', err));
 
-db.sync()
-  .then(() => {
-    // add roles to DB
-    rolesJSON.map(role => {
-      Role.create({
-        ...role,
-      });
-    });
+// db.sync()
+//   .then(() => {
+//     // add roles to DB
+//     rolesJSON.map(role => {
+//       Role.create({
+//         ...role,
+//       });
+//     });
 
-    // add sectors to DB
-    sectorsJSON.map(sector => {
-      Sector.create({
-        ...sector,
-      });
-    });
+//     // add sectors to DB
+//     sectorsJSON.map(sector => {
+//       Sector.create({
+//         ...sector,
+//       });
+//     });
 
-    // add users to DB
-    usersJSON.map(user => {
-      User.create({
-        ...user,
-        email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
-        password: '1234',
-      });
-    });
+//     // add users to DB
+//     usersJSON.map(user => {
+//       User.create({
+//         ...user,
+//         email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
+//         password: '1234',
+//       });
+//     });
 
-    // add hotels to DB
-    hotelsJSON.map(hotel => {
-      Hotel.create({
-        ...hotel,
-      });
-    });
+//     // add hotels to DB
+//     hotelsJSON.map(hotel => {
+//       Hotel.create({
+//         ...hotel,
+//       });
+//     });
 
-    // add visits to DB
-    visitsJSON.map(visit => {
-      const date = moment(visit.date, 'D/M/YYYY')
-        .utc()
-        .valueOf();
+//     // add visits to DB
+//     visitsJSON.map(visit => {
+//       const date = moment(visit.date, 'D/M/YYYY')
+//         .utc()
+//         .valueOf();
 
-      Visit.create({
-        ...visit,
-        date,
-        rate: parseFloat(visit.rate.toString().replace(',', '.')),
-        status: 1,
-      });
-    });
+//       Visit.create({
+//         ...visit,
+//         date,
+//         rate: parseFloat(visit.rate.toString().replace(',', '.')),
+//       });
+//     });
 
-    // add parkings to DB
-    parkingsJSON.map(parking => {
-      Parking.create({
-        ...parking,
-      });
-    });
-
-    // add vehicles to DB
-    vehiclesJSON.map(vehicle => {
-      Vehicle.create({
-        ...vehicle,
-      });
-    });
-  })
-  .catch(err => {
-    throw err;
-  });
+//     vehiclesJSON.map(vehicle => {
+//       Vehicle.create({
+//         ...vehicle,
+//       });
+//     });
+//   })
+//   .catch(err => {
+//     throw err;
+//   });
 
 // routes
 app.use('/api', indexRoutes);

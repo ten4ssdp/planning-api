@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import verifyToken from '../helpers/verifyToken';
 import User from '../models/User';
+import paginate from '../helpers/paginate';
 
 const router = express.Router();
 
@@ -48,19 +49,22 @@ router.post('/create', (req, res) => {
 });
 
 // Récupérer la liste des users (par défaut)
-router.get('/', async function(req, res) {
-  try {
-    jwt.verify(req.token, 'secretKey', (err, authData) => {
-      if (err) {
-        res.sendStatus(403);
-      } else {
-        res.json({
-          message: 'Liste des Users',
-          authData,
-        });
-      }
+router.get('/', function(req, res) {
+  let users: User[];
+  let page: string = req.query.page || '0';
+  let pageSize: string = req.query.pageSize || '20';
+
+  (async (): Promise<User[]> => {
+    //await jwt.verify(req.token, 'secretkey').catch(err => res.status(403).send(err));
+
+    users = await User.findAndCountAll({
+      ...paginate(parseInt(page), parseInt(pageSize)),
     });
-  } catch (err) {}
+
+    res.send(users);
+
+    return users;
+  })();
 });
 
 export default router;
