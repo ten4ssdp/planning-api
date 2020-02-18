@@ -4,6 +4,14 @@ import express from 'express';
 import kebabCase from 'lodash.kebabCase';
 import moment from 'moment';
 import db from './connexion';
+import indexRoutes from './routes/index';
+import userRoutes from './routes/user';
+import vehicleRoutes from './routes/vehicle';
+import hotelRoutes from './routes/hotel';
+import sectorRoutes from './routes/sector';
+import mickeyRoutes from './routes/mickey';
+import Role from './models/Role';
+import User from './models/User';
 import Hotel from './models/Hotel';
 import hotelsJSON from './models/json/hotels.json';
 import rolesJSON from './models/json/roles.json';
@@ -16,6 +24,7 @@ import Role from './models/Role';
 import Sector from './models/Sector';
 import User from './models/User';
 import Vehicle from './models/Vehicle';
+<<<<<<< HEAD
 import Visit from './models/Visit';
 import Parking from './models/Parking';
 import hotelRoutes from './routes/hotel';
@@ -24,6 +33,9 @@ import sectorRoutes from './routes/sector';
 import userRoutes from './routes/user';
 import vehicleRoutes from './routes/vehicle';
 import parkingRoutes from './routes/parking';
+=======
+import { pipe } from './utils';
+>>>>>>> feat(wip): dispatch visits
 
 const app = express();
 const PORT = process.env.PORT || '5000';
@@ -77,6 +89,7 @@ db.sync()
         ...visit,
         date,
         rate: parseFloat(visit.rate.toString().replace(',', '.')),
+        status: 1,
       });
     });
 
@@ -105,6 +118,10 @@ app.use('/api/user', userRoutes);
 app.use('/api/vehicle', vehicleRoutes);
 app.use('/api/hotel', hotelRoutes);
 app.use('/api/sector', sectorRoutes);
+<<<<<<< HEAD
 app.use('/api/parking', parkingRoutes);
+=======
+app.use('/api/mickey', mickeyRoutes);
+>>>>>>> feat(wip): dispatch visits
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));
