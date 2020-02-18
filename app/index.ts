@@ -1,29 +1,31 @@
-import express from 'express';
 import bodyParser from 'body-parser';
-import db from './connexion';
-import indexRoutes from './routes/index';
-import userRoutes from './routes/user';
-import vehicleRoutes from './routes/vehicle';
-import hotelRoutes from './routes/hotel';
-import sectorRoutes from './routes/sector';
-import Role from './models/Role';
-import User from './models/User';
-import Hotel from './models/Hotel';
-import Sector from './models/Sector';
-import Visit from './models/Visit';
-import sectorsJSON from './models/json/sectors.json';
-import rolesJSON from './models/json/roles.json';
-import usersJSON from './models/json/users.json';
-import hotelsJSON from './models/json/hotels.json';
-import visitsJSON from './models/json/visits.json';
-import vehiclesJSON from './models/json/vehicles.json';
+import cors from 'cors';
+import express from 'express';
 import kebabCase from 'lodash.kebabCase';
 import moment from 'moment';
+import db from './connexion';
+import Hotel from './models/Hotel';
+import hotelsJSON from './models/json/hotels.json';
+import rolesJSON from './models/json/roles.json';
+import sectorsJSON from './models/json/sectors.json';
+import usersJSON from './models/json/users.json';
+import vehiclesJSON from './models/json/vehicles.json';
+import visitsJSON from './models/json/visits.json';
+import Role from './models/Role';
+import Sector from './models/Sector';
+import User from './models/User';
 import Vehicle from './models/Vehicle';
+import Visit from './models/Visit';
+import hotelRoutes from './routes/hotel';
+import indexRoutes from './routes/index';
+import sectorRoutes from './routes/sector';
+import userRoutes from './routes/user';
+import vehicleRoutes from './routes/vehicle';
 
 const app = express();
 const PORT = process.env.PORT || '5000';
 
+app.use(cors());
 app.use(bodyParser());
 
 db.authenticate()
