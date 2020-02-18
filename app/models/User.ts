@@ -64,7 +64,12 @@ User.init(
 
 // sauvegrade de valeur retournée par l'association, comme ça on peut la réutiliser plus tard
 User.belongsTo(Role);
+Role.hasMany(User);
+
 User.belongsTo(Sector);
+Sector.hasMany(User);
+
 User.belongsToMany(Team, { through: TeamComposition });
+Team.belongsToMany(User, { through: TeamComposition });
 
 export default User;

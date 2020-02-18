@@ -1,27 +1,20 @@
 import express from 'express';
-import Hotel from '../models/Hotel';
-import Visit from '../models/Visit';
-import Sector from '../models/Sector';
+import Parking from '../models/Parking';
+import Vehicle from '../models/Vehicle';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const hotels = await Hotel.findAll({
+    const parkings = await Parking.findAll({ 
       include: [
         {
-          model: Visit,
-        },
-        {
-          model: Sector,
-        },
+          model: Vehicle
+        }
       ],
-      order: [
-        ['name', 'ASC'],
-        [Visit, 'date', 'ASC NULLS FIRST'],
-      ],
+      order: [['address', 'ASC']]
     });
-    res.send(hotels);
+    res.send(parkings);
   } catch (error) {
     res.header(400).send({ error });
   }
@@ -31,10 +24,10 @@ router.get('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const hotel = await Hotel.findByPk(req.params.id);
-    if (!hotel) throw new Error(`ID ${req.params.id} does not exist`);
+    const parking = await Parking.findByPk(req.params.id);
+    if (!parking) throw new Error(`ID ${req.params.id} does not exist`);
 
-    res.send(hotel);
+    res.send(parking);
   } catch (error) {
     res.header(400).send({ error: error.message });
   }
@@ -42,8 +35,7 @@ router.get('/:id(\\d+)', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const [
-      hotel] = await Hotel.upsert(
+    const [parking] = await Parking.upsert(
       {
         ...req.body,
       },
@@ -53,7 +45,7 @@ router.post('/', async (req, res) => {
       },
     );
 
-    res.send(hotel);
+    res.send(parking);
   } catch (error) {
     res.header(400).send({ error: error.message });
   }
@@ -63,15 +55,15 @@ router.delete('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const hotel = await Hotel.findByPk(req.params.id);
-    if (!hotel) throw new Error(`ID ${req.params.id} does not exist`);
+    const parking = await Parking.findByPk(req.params.id);
+    if (!parking) throw new Error(`ID ${req.params.id} does not exist`);
 
-    const isDeleted = await Hotel.destroy({
+    const isDeleted = await Parking.destroy({
       where: { id: req.params.id },
     });
     if (!isDeleted) throw new Error(`ID ${req.params.id} not delete`);
 
-    res.send(hotel);
+    res.send(parking);
   } catch (error) {
     res.header(400).send({ error: error.message });
   }

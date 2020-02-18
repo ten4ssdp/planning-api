@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
+import Vehicle from './Vehicle';
 
 class Parking extends Model {
   public id!: number;

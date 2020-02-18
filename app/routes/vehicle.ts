@@ -1,11 +1,23 @@
 import express from 'express';
 import Vehicle from '../models/Vehicle';
+import Parking from '../models/Parking';
+import Team from '../models/Team';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const vehicles = await Vehicle.findAll({ order: [['id', 'DESC']] });
+    const vehicles = await Vehicle.findAll({ 
+      include: [
+        {
+          model: Parking
+        },
+        {
+          model: Team
+        }
+      ],
+      order: [['numberPlate', 'ASC']]
+    });
     res.send(vehicles);
   } catch (error) {
     res.header(400).send({ error });
