@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
 import Parking from './Parking';
+import Team from './Team';
 
 class Vehicle extends Model {
   public id!: number;
@@ -40,5 +41,9 @@ Vehicle.init(
 );
 
 Vehicle.belongsTo(Parking);
+Parking.hasMany(Vehicle);
+
+Team.hasOne(Vehicle);
+Vehicle.belongsTo(Team);
 
 export default Vehicle;

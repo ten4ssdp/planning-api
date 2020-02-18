@@ -1,5 +1,8 @@
 import express from 'express';
 import Sector from '../models/Sector';
+import Team from '../models/Team';
+import Hotel from '../models/Hotel';
+import User from '../models/User';
 
 const router = express.Router();
 
@@ -10,7 +13,19 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const sectors = await Sector.findAll();
+    const sectors = await Sector.findAll({
+      include: [
+        {
+          model: Team
+        },
+        {
+          model: Hotel
+        },
+        {
+          model: User
+        },
+      ]
+    });
     res.send(sectors);
   } catch (error) {
     res.header(400).send({ error });

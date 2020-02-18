@@ -49,5 +49,6 @@ Visit.init(
 );
 
 Visit.belongsTo(Team);
+Team.hasMany(Visit);
 
 export default Visit;

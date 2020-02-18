@@ -11,16 +11,19 @@ import sectorsJSON from './models/json/sectors.json';
 import usersJSON from './models/json/users.json';
 import vehiclesJSON from './models/json/vehicles.json';
 import visitsJSON from './models/json/visits.json';
+import parkingsJSON from './models/json/parkings.json';
 import Role from './models/Role';
 import Sector from './models/Sector';
 import User from './models/User';
 import Vehicle from './models/Vehicle';
 import Visit from './models/Visit';
+import Parking from './models/Parking';
 import hotelRoutes from './routes/hotel';
 import indexRoutes from './routes/index';
 import sectorRoutes from './routes/sector';
 import userRoutes from './routes/user';
 import vehicleRoutes from './routes/vehicle';
+import parkingRoutes from './routes/parking';
 
 const app = express();
 const PORT = process.env.PORT || '5000';
@@ -77,11 +80,20 @@ db.sync()
       });
     });
 
+    // add parkings to DB
+    parkingsJSON.map(parking => {
+      Parking.create({
+        ...parking,
+      });
+    });
+
+    // add vehicles to DB
     vehiclesJSON.map(vehicle => {
       Vehicle.create({
         ...vehicle,
       });
     });
+
   })
   .catch(err => {
     throw err;
@@ -93,5 +105,6 @@ app.use('/api/user', userRoutes);
 app.use('/api/vehicle', vehicleRoutes);
 app.use('/api/hotel', hotelRoutes);
 app.use('/api/sector', sectorRoutes);
+app.use('/api/parking', parkingRoutes);
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));

@@ -30,7 +30,5 @@ Team.init(
   },
 );
 
-Team.belongsTo(Sector);
-Team.hasOne(Vehicle);
 
 export default Team;

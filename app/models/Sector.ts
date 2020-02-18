@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
+import Team from './Team';
 
 class Sector extends Model {
   public id!: number;
@@ -28,5 +29,8 @@ Sector.init(
     sequelize: db,
   },
 );
+
+Sector.hasMany(Team);
+Team.belongsTo(Sector);
 
 export default Sector;
