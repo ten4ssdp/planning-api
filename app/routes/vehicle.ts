@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
           model: Team
         }
       ],
+      ...(req.query.limit && { limit: req.query.limit }),
       order: [['numberPlate', 'ASC']]
     });
     res.send(vehicles);

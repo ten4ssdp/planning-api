@@ -24,7 +24,8 @@ router.get('/', async (req, res) => {
         {
           model: User
         },
-      ]
+      ],
+      ...(req.query.limit && { limit: req.query.limit }),
     });
     res.send(sectors);
   } catch (error) {

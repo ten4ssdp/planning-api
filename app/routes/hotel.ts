@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
           model: Sector,
         },
       ],
+      ...(req.query.limit && { limit: req.query.limit }),
       order: [
         ['name', 'ASC'],
         [Visit, 'date', 'ASC NULLS FIRST'],

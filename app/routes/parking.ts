@@ -12,6 +12,7 @@ router.get('/', async (req, res) => {
           model: Vehicle
         }
       ],
+      ...(req.query.limit && { limit: req.query.limit }),
       order: [['address', 'ASC']]
     });
     res.send(parkings);
