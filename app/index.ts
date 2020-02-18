@@ -4,6 +4,7 @@ import express from 'express';
 import kebabCase from 'lodash.kebabCase';
 import moment from 'moment';
 import db from './connexion';
+import { handleError } from '../app/helpers/error';
 import indexRoutes from './routes/index';
 import userRoutes from './routes/user';
 import vehicleRoutes from './routes/vehicle';
@@ -108,5 +109,10 @@ app.use('/api', hotelRoutes);
 app.use('/api', sectorRoutes);
 app.use('/api', parkingRoutes);
 app.use('/api/mickey', mickeyRoutes);
+
+// gestion des erreurs
+app.use((err, req, res, next) => {
+  handleError(err, req);
+});
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));

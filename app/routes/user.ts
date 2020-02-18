@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import verifyToken from '../helpers/verifyToken';
 import User from '../models/User';
 import paginate from '../helpers/paginate';
+import ErrorHandler from '../helpers/error';
 
 const router = express.Router();
 
@@ -25,11 +26,11 @@ router.get('/:id', (req, res) => {
 
 // créer un user
 router.post('/create', (req, res) => {
-  jwt.verify(req.token, 'secretKey', (err, decoded) => {
+  jwt.verify(req.token, 'secretKey', (err, authData) => {
     if (err) {
-      res.status(403);
+      throw new ErrorHandler(403, 'Le token est invalide.');
     } else {
-      console.log(decoded);
+      console.log(authData);
     }
   });
 
@@ -45,21 +46,28 @@ router.post('/create', (req, res) => {
     .then(user => {
       res.status(201).send(user);
     })
-    .catch(error => res.status(400).send(error));
+    .catch(error => {
+      throw new ErrorHandler(500, error);
+    });
 });
 
 // Récupérer la liste des users (par défaut)
-router.get('/', async (req, res) => {
+router.get('/', async function(req, res): Promise<void> {
   const page: string = req.query.page || '0';
   const pageSize: string = req.query.pageSize || '20';
+
+  await jwt.verify(req.token, 'secretkey', (err, authData) => {
+    if (err) {
+      throw new ErrorHandler(403, 'Le token est invalide.');
+    } else {
+    }
+  });
 
   const users: User[] = await User.findAndCountAll({
     ...paginate(parseInt(page), parseInt(pageSize)),
   });
 
   res.send(users);
-
-  return users;
 });
 
 export default router;
