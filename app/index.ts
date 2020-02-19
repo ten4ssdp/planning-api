@@ -9,6 +9,7 @@ import userRoutes from './routes/user';
 import vehicleRoutes from './routes/vehicle';
 import hotelRoutes from './routes/hotel';
 import sectorRoutes from './routes/sector';
+import parkingRoutes from './routes/parking';
 import mickeyRoutes from './routes/mickey';
 import Role from './models/Role';
 import User from './models/User';
@@ -20,22 +21,10 @@ import usersJSON from './models/json/users.json';
 import vehiclesJSON from './models/json/vehicles.json';
 import visitsJSON from './models/json/visits.json';
 import parkingsJSON from './models/json/parkings.json';
-import Role from './models/Role';
 import Sector from './models/Sector';
-import User from './models/User';
 import Vehicle from './models/Vehicle';
-<<<<<<< HEAD
 import Visit from './models/Visit';
 import Parking from './models/Parking';
-import hotelRoutes from './routes/hotel';
-import indexRoutes from './routes/index';
-import sectorRoutes from './routes/sector';
-import userRoutes from './routes/user';
-import vehicleRoutes from './routes/vehicle';
-import parkingRoutes from './routes/parking';
-=======
-import { pipe } from './utils';
->>>>>>> feat(wip): dispatch visits
 
 const app = express();
 const PORT = process.env.PORT || '5000';
@@ -106,7 +95,6 @@ db.sync()
         ...vehicle,
       });
     });
-
   })
   .catch(err => {
     throw err;
@@ -118,10 +106,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/vehicle', vehicleRoutes);
 app.use('/api/hotel', hotelRoutes);
 app.use('/api/sector', sectorRoutes);
-<<<<<<< HEAD
 app.use('/api/parking', parkingRoutes);
-=======
 app.use('/api/mickey', mickeyRoutes);
->>>>>>> feat(wip): dispatch visits
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));
