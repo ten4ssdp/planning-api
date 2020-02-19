@@ -45,6 +45,13 @@ db.sync()
       });
     });
 
+    // add parking to DB
+    parkingsJSON.map(parking => {
+      Parking.create({
+        ...parking,
+      });
+    });
+
     // add sectors to DB
     sectorsJSON.map(sector => {
       Sector.create({
@@ -81,6 +88,7 @@ db.sync()
       });
     });
 
+    // add vehicles to DB
     vehiclesJSON.map(vehicle => {
       Vehicle.create({
         ...vehicle,
