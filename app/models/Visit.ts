@@ -6,7 +6,7 @@ import Hotel from './Hotel';
 class Visit extends Model {
   public id!: number;
   public rate!: number;
-  public date!: Date;
+  public date!: string;
   public status!: number;
 }
 
