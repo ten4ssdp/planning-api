@@ -49,13 +49,11 @@ router.post('/create', (req, res) => {
 });
 
 // Récupérer la liste des users (par défaut)
-router.get('/', function(req, res) {
+router.get('/', async (req, res) =>
+ {
   let users: User[];
   let page: string = req.query.page || '0';
   let pageSize: string = req.query.pageSize || '20';
-
-  (async (): Promise<User[]> => {
-    //await jwt.verify(req.token, 'secretkey').catch(err => res.status(403).send(err));
 
     users = await User.findAndCountAll({
       ...paginate(parseInt(page), parseInt(pageSize)),
@@ -64,7 +62,6 @@ router.get('/', function(req, res) {
     res.send(users);
 
     return users;
-  })();
 });
 
 export default router;
