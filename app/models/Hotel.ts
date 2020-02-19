@@ -10,6 +10,7 @@ class Hotel extends Model {
   public zipCode!: number;
   public city!: string;
   public roomCount!: number;
+  public visits?: Visit[];
 }
 
 Hotel.init(

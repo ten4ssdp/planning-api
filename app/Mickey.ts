@@ -46,17 +46,21 @@ export const getUsersBySector = async (): Promise<any> => {
     }, {});
 };
 
-const calculateHotelScore = hotel => {
+/**
+ * Generates a score from hotels visits and rate
+ * @param hotel An hotel object with visits
+ */
+const calculateHotelScore = (hotel: Hotel): number => {
   try {
     let score = 0;
-    if (hotel.visits.length === 0) {
+    if (hotel.visits?.length === 0) {
       score += 30;
     } else {
-      const rate = hotel.visits[0].rate;
+      const rate = hotel.visits?.[0]?.rate;
       const currentDate = new Date().getTime();
       const fiveMonthAgo = currentDate - new Date().setMonth(-6);
       const threeMonthAgo = currentDate - new Date().setMonth(-4);
-      const lastVisitDate = new Date(hotel.visits[0].date).getTime();
+      const lastVisitDate = new Date(hotel.visits?.[0]?.date || 1).getTime();
       const visitOffset = currentDate - lastVisitDate;
 
       if (visitOffset > fiveMonthAgo) {
@@ -80,8 +84,10 @@ const calculateHotelScore = hotel => {
     return score;
   } catch (e) {
     console.error(e);
+    return -1;
   }
 };
+
 export const getHotelsAndVisits = async (): Promise<any> => {
   return await Sector.findAll({
     group: ['sector.id'],
