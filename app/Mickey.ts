@@ -56,7 +56,7 @@ const calculateHotelScore = (hotel: Hotel): number => {
     if (hotel.visits?.length === 0) {
       score += 30;
     } else {
-      const rate = hotel.visits?.[0]?.rate;
+      const rate = hotel.visits?.[0]?.rate || 0;
       const currentDate = new Date().getTime();
       const fiveMonthAgo = currentDate - new Date().setMonth(-6);
       const threeMonthAgo = currentDate - new Date().setMonth(-4);
