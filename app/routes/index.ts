@@ -1,33 +1,56 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
-import verifyToken from '../helpers/verifyToken';
-import verifyCredentials from '../helpers/verifyCredentials';
+import ErrorHandler from '../helpers/error';
+import Role from '../models/Role';
+import Sector from '../models/Sector';
+import bcrypt from 'bcrypt';
 
 const router = express.Router({ mergeParams: true });
 
-// Générer un token
-router.post('/login', verifyCredentials, (req, res) => {
-  try {
-    jwt.sign(
+router.post(
+  '/login',
+  async (req, res): Promise<void> => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      res
+        .status(400)
+        .json({ error: 'Veuillez entrer un Mot de passe et un Email valide.' });
+    }
+
+    let userFound = await User.findOne({
+      include: [{ model: Role }, { model: Sector }],
+      where: { email },
+      raw: true,
+    });
+
+    let matchPwd = await bcrypt.compare(password, userFound.password);
+
+    if (!userFound || !matchPwd) {
+      res.status(400).json({ error: 'Email ou Mot de passe invalide.' });
+    }
+
+    let token = jwt.sign(
       {
-        ...req.user,
+        name: userFound.name,
+        lastname: userFound.lastname,
+        role: {
+          id: userFound['role.id'],
+          name: userFound['role.name'],
+          level: userFound['role.level'],
+        },
+        sector: {
+          id: userFound['sector.id'],
+          name: userFound['sector.name'],
+        },
       },
-      'secretKey',
-      { expiresIn: '24h' },
-      (err, token) => {
-        if (err) {
-          res.sendStatus(401);
-        } else {
-          res.json({ token });
-        }
-      },
+      process.env.JWTSECRET,
     );
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
-  }
-});
+
+    res.status(200).json({ token });
+  },
+);
 
 // Index de l'api
 router.get('/', async function(req, res) {

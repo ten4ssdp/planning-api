@@ -24,8 +24,12 @@ import visitsJSON from './models/json/visits.json';
 import parkingsJSON from './models/json/parkings.json';
 import Sector from './models/Sector';
 import Vehicle from './models/Vehicle';
+<<<<<<< HEAD
 import Visit from './models/Visit';
 import Parking from './models/Parking';
+=======
+import verify from './helpers/verifyToken';
+>>>>>>> delete verify credentials middleware + rework auth flow
 
 const app = express();
 const PORT = process.env.PORT || '5000';
@@ -111,8 +115,8 @@ app.use('/api', parkingRoutes);
 app.use('/api/mickey', mickeyRoutes);
 
 // gestion des erreurs
-app.use((err, req, res, next) => {
-  handleError(err, req);
-});
+// app.use((err, req, res, next) => {
+//   handleError(err, req);
+// });
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));
