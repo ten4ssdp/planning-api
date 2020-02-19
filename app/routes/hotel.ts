@@ -5,6 +5,29 @@ import Sector from '../models/Sector';
 
 const router = express.Router();
 
+/**
+ * @api {get} /hotels Request all hotels
+ * @apiName GetHotels
+ * @apiGroup Hotel
+ * 
+ * @apiSuccess {Number} id ID of the hotel.
+ * @apiSuccess {String} address Address of the hotel.
+ * @apiSuccess {Number} zipCode Zip code of the hotel.
+ * @apiSuccess {String} city City of the hotel.
+ * @apiSuccess {String} createdAt Hotel row creation date.
+ * @apiSuccess {String} updatedAt Hotel row update date.
+ * @apiSuccess {Number} sectorId Hotel sector ID.
+ * @apiSuccess {Object[]} visits Visits of the hotel.
+ * @apiSuccess {Number} visits.id ID of the visit.
+ * @apiSuccess {Number} visits.rate Rate of the visit.
+ * @apiSuccess {String} visits.createdAt Row creation date.
+ * @apiSuccess {String} visits.updatedAt Row update date.
+ * @apiSuccess {Object} sector ID of the sector.
+ * @apiSuccess {Number} sector.id ID of the sector.
+ * @apiSuccess {String} sector.name Name of the sector.
+ * @apiSuccess {String} sector.createdAt Row creation date.
+ * @apiSuccess {String} sector.updatedAt Row update date.
+ */
 router.get('/', async (req, res) => {
   try {
     const hotels = await Hotel.findAll({
@@ -24,10 +47,35 @@ router.get('/', async (req, res) => {
     });
     res.send(hotels);
   } catch (error) {
-    res.header(400).send({ error });
+    res.status(404).send({ error });
   }
 });
 
+/**
+ * @api {get} /hotels/:id Request an hotel
+ * @apiName GetHotel
+ * @apiGroup Hotel
+ * 
+ * @apiParam {Number} id Hotel unique ID.
+ * 
+ * @apiSuccess {Number} id ID of the hotel.
+ * @apiSuccess {String} address Address of the hotel.
+ * @apiSuccess {Number} zipCode Zip code of the hotel.
+ * @apiSuccess {String} city City of the hotel.
+ * @apiSuccess {String} createdAt Hotel row creation date.
+ * @apiSuccess {String} updatedAt Hotel row update date.
+ * @apiSuccess {Number} sectorId Hotel sector ID.
+ * @apiSuccess {Object[]} visits Visits of the hotel.
+ * @apiSuccess {Number} visits.id ID of the visit.
+ * @apiSuccess {Number} visits.rate Rate of the visit.
+ * @apiSuccess {String} visits.createdAt Row creation date.
+ * @apiSuccess {String} visits.updatedAt Row update date.
+ * @apiSuccess {Object} sector ID of the sector.
+ * @apiSuccess {Number} sector.id ID of the sector.
+ * @apiSuccess {String} sector.name Name of the sector.
+ * @apiSuccess {String} sector.createdAt Row creation date.
+ * @apiSuccess {String} sector.updatedAt Row update date.
+ */
 router.get('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
@@ -37,10 +85,23 @@ router.get('/:id(\\d+)', async (req, res) => {
 
     res.send(hotel);
   } catch (error) {
-    res.header(400).send({ error: error.message });
+    res.status(404).send({ error: error.message });
   }
 });
 
+/**
+ * @api {post} /hotels Add an hotel
+ * @apiName AddHotel
+ * @apiGroup Hotel
+ * 
+ * @apiSuccess {Number} id ID of the hotel.
+ * @apiSuccess {String} address Address of the hotel.
+ * @apiSuccess {Number} zipCode Zip code of the hotel.
+ * @apiSuccess {String} city City of the hotel.
+ * @apiSuccess {String} createdAt Hotel row creation date.
+ * @apiSuccess {String} updatedAt Hotel row update date.
+ * @apiSuccess {Number} sectorId Hotel sector ID.
+ */
 router.post('/', async (req, res) => {
   try {
     const hotel = await Hotel.create(
@@ -54,10 +115,25 @@ router.post('/', async (req, res) => {
 
     res.send(hotel);
   } catch (error) {
-    res.header(400).send({ error: error.message });
+    res.status(404).send({ error: error.message });
   }
 });
 
+/**
+ * @api {put} /hotels/:id Update an hotel
+ * @apiName UpdateHotel
+ * @apiGroup Hotel
+ * 
+ * @apiParam {Number} id Hotel unique ID.
+ * 
+ * @apiSuccess {Number} id ID of the hotel.
+ * @apiSuccess {String} address Address of the hotel.
+ * @apiSuccess {Number} zipCode Zip code of the hotel.
+ * @apiSuccess {String} city City of the hotel.
+ * @apiSuccess {String} createdAt Hotel row creation date.
+ * @apiSuccess {String} updatedAt Hotel row update date.
+ * @apiSuccess {Number} sectorId Hotel sector ID.
+ */
 router.put('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
@@ -71,10 +147,25 @@ router.put('/:id(\\d+)', async (req, res) => {
 
     res.send(hotel);
   } catch (error) {
-    res.header(400).send({ error: error.message });
+    res.status(404).send({ error: error.message });
   }
 })
 
+/**
+ * @api {delete} /hotels/:id Delete an hotel
+ * @apiName DeleteHotel
+ * @apiGroup Hotel
+ * 
+ * @apiParam {Number} id Hotel unique ID.
+ * 
+ * @apiSuccess {Number} id ID of the hotel.
+ * @apiSuccess {String} address Address of the hotel.
+ * @apiSuccess {Number} zipCode Zip code of the hotel.
+ * @apiSuccess {String} city City of the hotel.
+ * @apiSuccess {String} createdAt Hotel row creation date.
+ * @apiSuccess {String} updatedAt Hotel row update date.
+ * @apiSuccess {Number} sectorId Hotel sector ID.
+ */
 router.delete('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
@@ -89,7 +180,7 @@ router.delete('/:id(\\d+)', async (req, res) => {
 
     res.send(hotel);
   } catch (error) {
-    res.header(400).send({ error: error.message });
+    res.status(404).send({ error: error.message });
   }
 });
 

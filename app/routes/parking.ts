@@ -4,6 +4,26 @@ import Vehicle from '../models/Vehicle';
 
 const router = express.Router();
 
+/**
+ * @api {get} /parkings Request all parkings
+ * @apiName GetParkings
+ * @apiGroup Parking
+ *
+ * @apiSuccess {Number} id ID of the sector.
+ * @apiSuccess {String} address Address of the parking.
+ * @apiSuccess {Number} zipCode Zip code of the parking.
+ * @apiSuccess {String} city City of the parking.
+ * @apiSuccess {String} createdAt Parking row creation date.
+ * @apiSuccess {String} updatedAt Parking row update date.
+ * @apiSuccess {Object[]} vehicles Vehicle of the parking.
+ * @apiSuccess {Number} vehicle.id ID of the vehicle.
+ * @apiSuccess {String} vehicle.numberPlate NumberPlate of the vehicle.
+ * @apiSuccess {String} vehicle.type Model of the vehicle.
+ * @apiSuccess {String} vehicle.createdAt Row creation date.
+ * @apiSuccess {String} vehicle.updatedAt Row update date.
+ * @apiSuccess {Number} vehicle.parkingId ID of the linked parking row.
+ * @apiSuccess {Number} vehicle.teamId ID of the linked team row.
+ */
 router.get('/', async (req, res) => {
   try {
     const parkings = await Parking.findAll({ 
@@ -17,10 +37,32 @@ router.get('/', async (req, res) => {
     });
     res.send(parkings);
   } catch (error) {
-    res.header(400).send({ error });
+    res.status(404).send({ error });
   }
 });
 
+/**
+ * @api {get} /parkings/:id Request a parking
+ * @apiName GetParking
+ * @apiGroup Parking
+ *
+ * @apiParam {Number} id Parking unique ID.
+ * 
+ * @apiSuccess {Number} id ID of the sector.
+ * @apiSuccess {String} address Address of the parking.
+ * @apiSuccess {Number} zipCode Zip code of the parking.
+ * @apiSuccess {String} city City of the parking.
+ * @apiSuccess {String} createdAt Parking row creation date.
+ * @apiSuccess {String} updatedAt Parking row update date.
+ * @apiSuccess {Object[]} vehicles Vehicle of the parking.
+ * @apiSuccess {Number} vehicle.id ID of the vehicle.
+ * @apiSuccess {String} vehicle.numberPlate NumberPlate of the vehicle.
+ * @apiSuccess {String} vehicle.type Model of the vehicle.
+ * @apiSuccess {String} vehicle.createdAt Row creation date.
+ * @apiSuccess {String} vehicle.updatedAt Row update date.
+ * @apiSuccess {Number} vehicle.parkingId ID of the linked parking row.
+ * @apiSuccess {Number} vehicle.teamId ID of the linked team row.
+ */
 router.get('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
@@ -30,10 +72,24 @@ router.get('/:id(\\d+)', async (req, res) => {
 
     res.send(parking);
   } catch (error) {
-    res.header(400).send({ error: error.message });
+    res.status(404).send({ error: error.message });
   }
 });
 
+/**
+ * @api {put} /parkings/:id Update a parking
+ * @apiName UpdateParking
+ * @apiGroup Parking
+ *
+ * @apiParam {Number} id Parking unique ID.
+ * 
+ * @apiSuccess {Number} id ID of the sector.
+ * @apiSuccess {String} address Address of the parking.
+ * @apiSuccess {Number} zipCode Zip code of the parking.
+ * @apiSuccess {String} city City of the parking.
+ * @apiSuccess {String} createdAt Parking row creation date.
+ * @apiSuccess {String} updatedAt Parking row update date.
+ */
 router.put('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
@@ -47,10 +103,22 @@ router.put('/:id(\\d+)', async (req, res) => {
 
     res.send(parking);
   } catch (error) {
-    res.header(400).send({ error: error.message });
+    res.status(404).send({ error: error.message });
   }
 })
 
+/**
+ * @api {post} /parkings Add a parking
+ * @apiName AddParking
+ * @apiGroup Parking
+ * 
+ * @apiSuccess {Number} id ID of the sector.
+ * @apiSuccess {String} address Address of the parking.
+ * @apiSuccess {Number} zipCode Zip code of the parking.
+ * @apiSuccess {String} city City of the parking.
+ * @apiSuccess {String} createdAt Parking row creation date.
+ * @apiSuccess {String} updatedAt Parking row update date.
+ */
 router.post('/', async (req, res) => {
   try {
     const parking = await Parking.create(
@@ -64,10 +132,24 @@ router.post('/', async (req, res) => {
 
     res.send(parking);
   } catch (error) {
-    res.header(400).send({ error: error.message });
+    res.status(404).send({ error: error.message });
   }
 });
 
+/**
+ * @api {delete} /parkings/:id Delete a parking
+ * @apiName DeleteParking
+ * @apiGroup Parking
+ *
+ * @apiParam {Number} id Parking unique ID.
+ * 
+ * @apiSuccess {Number} id ID of the sector.
+ * @apiSuccess {String} address Address of the parking.
+ * @apiSuccess {Number} zipCode Zip code of the parking.
+ * @apiSuccess {String} city City of the parking.
+ * @apiSuccess {String} createdAt Parking row creation date.
+ * @apiSuccess {String} updatedAt Parking row update date.
+ */
 router.delete('/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
@@ -82,7 +164,7 @@ router.delete('/:id(\\d+)', async (req, res) => {
 
     res.send(parking);
   } catch (error) {
-    res.header(400).send({ error: error.message });
+    res.status(404).send({ error: error.message });
   }
 });
 
