@@ -46,6 +46,42 @@ export const getUsersBySector = async (): Promise<any> => {
     }, {});
 };
 
+const calculateHotelScore = hotel => {
+  try {
+    let score = 0;
+    if (hotel.visits.length === 0) {
+      score += 30;
+    } else {
+      const rate = hotel.visits[0].rate;
+      const currentDate = new Date().getTime();
+      const fiveMonthAgo = currentDate - new Date().setMonth(-6);
+      const threeMonthAgo = currentDate - new Date().setMonth(-4);
+      const lastVisitDate = new Date(hotel.visits[0].date).getTime();
+      const visitOffset = currentDate - lastVisitDate;
+
+      if (visitOffset > fiveMonthAgo) {
+        score += 10;
+      } else if (visitOffset > threeMonthAgo) {
+        score += 5;
+      } else if (visitOffset < threeMonthAgo) {
+        score += 1;
+      }
+
+      if (rate > 50) {
+        score += 15;
+      } else if (rate > 30) {
+        score += 10;
+      } else if (rate > 20) {
+        score += 5;
+      } else if (rate < 20) {
+        score += 1;
+      }
+    }
+    return score;
+  } catch (e) {
+    console.error(e);
+  }
+};
 export const getHotelsAndVisits = async (): Promise<any> => {
   return await Sector.findAll({
     group: ['sector.id'],
@@ -69,7 +105,13 @@ export const getHotelsAndVisits = async (): Promise<any> => {
         order: [[Visit, 'date', 'ASC NULLS FIRST']],
       });
 
-      const sectorsRows = hotels;
+      const sectorsRows = hotels
+        .map(hotel => ({
+          ...hotel.dataValues,
+          score: calculateHotelScore(hotel),
+        }))
+        .sort((a, b) => b.score - a.score);
+
       sectorsMutated[sector] = [
         ...(sectorsMutated[sector] || []),
         ...sectorsRows,

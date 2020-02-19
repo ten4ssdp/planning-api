@@ -3,31 +3,45 @@ import User from '../models/User';
 import Role from '../models/Role';
 import Sector from '../models/Sector';
 import { Sequelize } from 'sequelize';
-import Mickey, {
-  getHotelsAndVisits,
-  dispatchHotelsToTeams,
-  getTeamsGroupedBySector,
-  getVisits,
-  createVisits,
-} from '../Mickey';
-import Team from '../models/Team';
+import Mickey, { getHotelsAndVisits, getTeamsGroupedBySector } from '../Mickey';
 import Visit from '../models/Visit';
 import Hotel from '../models/Hotel';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const users: User[] = await User.findAll({
-    include: [
-      {
-        model: Role,
-        where: {
-          name: 'Intervenant Terrain',
-        },
-      },
-    ],
-  });
-  return res.send(users);
+  const visits = await Sector.findAll({
+    attributes: ['name'],
+    group: ['sector.id'],
+  })
+    .map(sector => sector.name)
+    .reduce(async (sectorsPromise, sector) => {
+      const sectorsMutated = await sectorsPromise;
+
+      const hotels = await Hotel.findAll({
+        include: [
+          {
+            model: Visit,
+          },
+          {
+            model: Sector,
+            where: {
+              name: sector,
+            },
+          },
+        ],
+        order: [[Visit, 'date', 'ASC NULLS FIRST']],
+      });
+
+      const sectorsRows = hotels;
+      sectorsMutated[sector] = [
+        ...(sectorsMutated[sector] || []),
+        ...sectorsRows,
+      ];
+
+      return sectorsMutated;
+    }, {});
+  return res.send(visits);
 });
 router.get('/sector', async (req, res) => {
   const sectors = await Sector.findAll({
