@@ -1,7 +1,7 @@
 define({ "api": [
   {
     "type": "post",
-    "url": "/hotels",
+    "url": "/hotel",
     "title": "Add an hotel",
     "name": "AddHotel",
     "group": "Hotel",
@@ -66,7 +66,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/hotels/:id",
+    "url": "/hotel/:id",
     "title": "Delete an hotel",
     "name": "DeleteHotel",
     "group": "Hotel",
@@ -144,7 +144,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/hotels/:id",
+    "url": "/hotel/:id",
     "title": "Request an hotel",
     "name": "GetHotel",
     "group": "Hotel",
@@ -427,7 +427,7 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/hotels/:id",
+    "url": "/hotel/:id",
     "title": "Update an hotel",
     "name": "UpdateHotel",
     "group": "Hotel",
@@ -505,7 +505,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/parkings",
+    "url": "/parking",
     "title": "Add a parking",
     "name": "AddParking",
     "group": "Parking",
@@ -563,7 +563,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/parkings/:id",
+    "url": "/parking/:id",
     "title": "Delete a parking",
     "name": "DeleteParking",
     "group": "Parking",
@@ -634,7 +634,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/parkings/:id",
+    "url": "/parking/:id",
     "title": "Request a parking",
     "name": "GetParking",
     "group": "Parking",
@@ -875,7 +875,7 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/parkings/:id",
+    "url": "/parking/:id",
     "title": "Update a parking",
     "name": "UpdateParking",
     "group": "Parking",
@@ -946,7 +946,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/sectors",
+    "url": "/sector",
     "title": "Add a sector",
     "name": "AddSector",
     "group": "Sector",
@@ -990,7 +990,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/sectors/:id",
+    "url": "/sector/:id",
     "title": "Delete a sector",
     "name": "DeleteSector",
     "group": "Sector",
@@ -1047,7 +1047,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/sectors/:id",
+    "url": "/sector/:id",
     "title": "Request a sector",
     "name": "GetSector",
     "group": "Sector",
@@ -1274,7 +1274,7 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/sectors/:id",
+    "url": "/sector/:id",
     "title": "Update a sector",
     "name": "UpdateSector",
     "group": "Sector",
@@ -1331,7 +1331,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/vehicles",
+    "url": "/vehicle",
     "title": "Add a vehicle",
     "name": "AddVehicle",
     "group": "Vehicle",
@@ -1396,7 +1396,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/vehicles/:id",
+    "url": "/vehicle/:id",
     "title": "Delete a vehicle",
     "name": "DeleteVehicle",
     "group": "Vehicle",
@@ -1474,7 +1474,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/vehicles/:id",
+    "url": "/vehicle/:id",
     "title": "Request a vehicle",
     "name": "GetVehicle",
     "group": "Vehicle",
@@ -1729,7 +1729,7 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/vehicles/:id",
+    "url": "/vehicle/:id",
     "title": "Update a vehicle",
     "name": "UpdateVehicle",
     "group": "Vehicle",
