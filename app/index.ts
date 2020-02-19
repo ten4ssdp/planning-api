@@ -102,10 +102,10 @@ db.sync()
 // routes
 app.use('/api', indexRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/vehicle', vehicleRoutes);
-app.use('/api/hotel', hotelRoutes);
-app.use('/api/sector', sectorRoutes);
-app.use('/api/parking', parkingRoutes);
+app.use('/api', vehicleRoutes);
+app.use('/api', hotelRoutes);
+app.use('/api', sectorRoutes);
+app.use('/api', parkingRoutes);
 app.use('/api/mickey', mickeyRoutes);
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));

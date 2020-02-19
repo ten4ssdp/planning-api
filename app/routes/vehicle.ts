@@ -27,7 +27,7 @@ const router = express.Router();
  * @apiSuccess {Object} team Team information.
  *
  */
-router.get('/', async (req, res) => {
+router.get('/vehicles', async (req, res) => {
   try {
     const vehicles = await Vehicle.findAll({ 
       include: [
@@ -48,7 +48,7 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * @api {get} /vehicles/:id Request a vehicle
+ * @api {get} /vehicle/:id Request a vehicle
  * @apiName GetVehicle
  * @apiGroup Vehicle
  * 
@@ -71,7 +71,7 @@ router.get('/', async (req, res) => {
  * @apiSuccess {Object} team Team information.
  *
  */
-router.get('/:id(\\d+)', async (req, res) => {
+router.get('/vehicle/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
@@ -86,7 +86,7 @@ router.get('/:id(\\d+)', async (req, res) => {
 
 
 /**
- * @api {put} /vehicles/:id Update a vehicle
+ * @api {put} /vehicle/:id Update a vehicle
  * @apiName UpdateVehicle
  * @apiGroup Vehicle
  * 
@@ -101,7 +101,7 @@ router.get('/:id(\\d+)', async (req, res) => {
  * @apiSuccess {Number} teamId ID of the linked team row.
  *
  */
-router.put('/:id(\\d+)', async (req, res) => {
+router.put('/vehicle/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
@@ -119,7 +119,7 @@ router.put('/:id(\\d+)', async (req, res) => {
 })
 
 /**
- * @api {post} /vehicles Add a vehicle
+ * @api {post} /vehicle Add a vehicle
  * @apiName AddVehicle
  * @apiGroup Vehicle
  * 
@@ -132,7 +132,7 @@ router.put('/:id(\\d+)', async (req, res) => {
  * @apiSuccess {Number} teamId ID of the linked team row.
  * 
  */
-router.post('/', async (req, res) => {
+router.post('/vehicle', async (req, res) => {
   try {
     const vehicle = await Vehicle.create(
       {
@@ -150,7 +150,7 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {delete} /vehicles/:id Delete a vehicle
+ * @api {delete} /vehicle/:id Delete a vehicle
  * @apiName DeleteVehicle
  * @apiGroup Vehicle
  * 
@@ -165,7 +165,7 @@ router.post('/', async (req, res) => {
  * @apiSuccess {Number} teamId ID of the linked team row.
  * 
  */
-router.delete('/:id(\\d+)', async (req, res) => {
+router.delete('/vehicle/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 

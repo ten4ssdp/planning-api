@@ -24,7 +24,7 @@ const router = express.Router();
  * @apiSuccess {Number} vehicle.parkingId ID of the linked parking row.
  * @apiSuccess {Number} vehicle.teamId ID of the linked team row.
  */
-router.get('/', async (req, res) => {
+router.get('/parkings', async (req, res) => {
   try {
     const parkings = await Parking.findAll({ 
       include: [
@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * @api {get} /parkings/:id Request a parking
+ * @api {get} /parking/:id Request a parking
  * @apiName GetParking
  * @apiGroup Parking
  *
@@ -63,7 +63,7 @@ router.get('/', async (req, res) => {
  * @apiSuccess {Number} vehicle.parkingId ID of the linked parking row.
  * @apiSuccess {Number} vehicle.teamId ID of the linked team row.
  */
-router.get('/:id(\\d+)', async (req, res) => {
+router.get('/parking/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
@@ -77,7 +77,7 @@ router.get('/:id(\\d+)', async (req, res) => {
 });
 
 /**
- * @api {put} /parkings/:id Update a parking
+ * @api {put} /parking/:id Update a parking
  * @apiName UpdateParking
  * @apiGroup Parking
  *
@@ -90,7 +90,7 @@ router.get('/:id(\\d+)', async (req, res) => {
  * @apiSuccess {String} createdAt Parking row creation date.
  * @apiSuccess {String} updatedAt Parking row update date.
  */
-router.put('/:id(\\d+)', async (req, res) => {
+router.put('/parking/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
@@ -108,7 +108,7 @@ router.put('/:id(\\d+)', async (req, res) => {
 })
 
 /**
- * @api {post} /parkings Add a parking
+ * @api {post} /parking Add a parking
  * @apiName AddParking
  * @apiGroup Parking
  * 
@@ -119,7 +119,7 @@ router.put('/:id(\\d+)', async (req, res) => {
  * @apiSuccess {String} createdAt Parking row creation date.
  * @apiSuccess {String} updatedAt Parking row update date.
  */
-router.post('/', async (req, res) => {
+router.post('/parking', async (req, res) => {
   try {
     const parking = await Parking.create(
       {
@@ -137,7 +137,7 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {delete} /parkings/:id Delete a parking
+ * @api {delete} /parking/:id Delete a parking
  * @apiName DeleteParking
  * @apiGroup Parking
  *
@@ -150,7 +150,7 @@ router.post('/', async (req, res) => {
  * @apiSuccess {String} createdAt Parking row creation date.
  * @apiSuccess {String} updatedAt Parking row update date.
  */
-router.delete('/:id(\\d+)', async (req, res) => {
+router.delete('/parking/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 

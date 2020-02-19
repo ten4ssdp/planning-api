@@ -26,7 +26,7 @@ const router = express.Router();
  * @apiSuccess {String} hotels.updatedAt Hotel row update date.
  * 
  */
-router.get('/', async (req, res) => {
+router.get('/sectors', async (req, res) => {
   try {
     const sectors = await Sector.findAll({
       include: [
@@ -49,7 +49,7 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * @api {get} /sectors/:id Request a sector
+ * @api {get} /sector/:id Request a sector
  * @apiName GetSector
  * @apiGroup Sector
  * 
@@ -71,7 +71,7 @@ router.get('/', async (req, res) => {
  * @apiSuccess {String} hotels.updatedAt Hotel row update date.
  * 
  */
-router.get('/:id(\\d+)', async (req, res) => {
+router.get('/sector/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
@@ -85,7 +85,7 @@ router.get('/:id(\\d+)', async (req, res) => {
 });
 
 /**
- * @api {put} /sectors/:id Update a sector
+ * @api {put} /sector/:id Update a sector
  * @apiName UpdateSector
  * @apiGroup Sector
  * 
@@ -97,7 +97,7 @@ router.get('/:id(\\d+)', async (req, res) => {
  * @apiSuccess {String} updatedAt Row update date.
  * 
  */
-router.put('/:id(\\d+)', async (req, res) => {
+router.put('/sector/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
@@ -115,7 +115,7 @@ router.put('/:id(\\d+)', async (req, res) => {
 })
 
 /**
- * @api {post} /sectors Add a sector
+ * @api {post} /sector Add a sector
  * @apiName AddSector
  * @apiGroup Sector
  * 
@@ -125,7 +125,7 @@ router.put('/:id(\\d+)', async (req, res) => {
  * @apiSuccess {String} updatedAt Row update date.
  * 
  */
-router.post('/', async (req, res) => {
+router.post('/sector', async (req, res) => {
   try {
     const sector = await Sector.create(
       {
@@ -143,7 +143,7 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {delete} /sectors/:id Delete a sector
+ * @api {delete} /sector/:id Delete a sector
  * @apiName DeleteSector
  * @apiGroup Sector
  * 
@@ -155,7 +155,7 @@ router.post('/', async (req, res) => {
  * @apiSuccess {String} updatedAt Row update date.
  * 
  */
-router.delete('/:id(\\d+)', async (req, res) => {
+router.delete('/sector/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 

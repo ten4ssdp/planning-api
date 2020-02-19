@@ -28,7 +28,7 @@ const router = express.Router();
  * @apiSuccess {String} sector.createdAt Row creation date.
  * @apiSuccess {String} sector.updatedAt Row update date.
  */
-router.get('/', async (req, res) => {
+router.get('/hotels', async (req, res) => {
   try {
     const hotels = await Hotel.findAll({
       include: [
@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * @api {get} /hotels/:id Request an hotel
+ * @api {get} /hotel/:id Request an hotel
  * @apiName GetHotel
  * @apiGroup Hotel
  * 
@@ -76,7 +76,7 @@ router.get('/', async (req, res) => {
  * @apiSuccess {String} sector.createdAt Row creation date.
  * @apiSuccess {String} sector.updatedAt Row update date.
  */
-router.get('/:id(\\d+)', async (req, res) => {
+router.get('/hotel/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
@@ -90,7 +90,7 @@ router.get('/:id(\\d+)', async (req, res) => {
 });
 
 /**
- * @api {post} /hotels Add an hotel
+ * @api {post} /hotel Add an hotel
  * @apiName AddHotel
  * @apiGroup Hotel
  * 
@@ -102,7 +102,7 @@ router.get('/:id(\\d+)', async (req, res) => {
  * @apiSuccess {String} updatedAt Hotel row update date.
  * @apiSuccess {Number} sectorId Hotel sector ID.
  */
-router.post('/', async (req, res) => {
+router.post('/hotel', async (req, res) => {
   try {
     const hotel = await Hotel.create(
       {
@@ -120,7 +120,7 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {put} /hotels/:id Update an hotel
+ * @api {put} /hotel/:id Update an hotel
  * @apiName UpdateHotel
  * @apiGroup Hotel
  * 
@@ -134,7 +134,7 @@ router.post('/', async (req, res) => {
  * @apiSuccess {String} updatedAt Hotel row update date.
  * @apiSuccess {Number} sectorId Hotel sector ID.
  */
-router.put('/:id(\\d+)', async (req, res) => {
+router.put('/hotel/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
@@ -152,7 +152,7 @@ router.put('/:id(\\d+)', async (req, res) => {
 })
 
 /**
- * @api {delete} /hotels/:id Delete an hotel
+ * @api {delete} /hotel/:id Delete an hotel
  * @apiName DeleteHotel
  * @apiGroup Hotel
  * 
@@ -166,7 +166,7 @@ router.put('/:id(\\d+)', async (req, res) => {
  * @apiSuccess {String} updatedAt Hotel row update date.
  * @apiSuccess {Number} sectorId Hotel sector ID.
  */
-router.delete('/:id(\\d+)', async (req, res) => {
+router.delete('/hotel/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
