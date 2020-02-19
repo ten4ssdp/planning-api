@@ -1,13 +1,18 @@
+import jwt from 'jsonwebtoken';
+
 function verify(req, res, next): void {
   const bearerHeader = req.headers['authorization'];
-  if (typeof bearerHeader !== 'undefined') {
-    const bearer = bearerHeader.split(' ');
-    const bearerToken = bearer[1];
-    req.token = bearerToken;
+
+  if (!bearerHeader) return res.status(400).json({ error: 'Accès refusé' });
+
+  const token = bearerHeader.split(' ')[1];
+
+  try {
+    const verified = jwt.verify(token, process.env.JWTSECRET);
+    req.user = verified;
     next();
-  } else {
-    // Forbiden
-    res.sendStatus(403);
+  } catch (error) {
+    res.status(400).json({ error: 'Mauvais token' });
   }
 }
 
