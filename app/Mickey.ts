@@ -334,6 +334,27 @@ export const generatesPlanning = (visits: Visit[]) => {
   return plannedVisits;
 };
 
+export const setUsersToVisits = async (teams): Promise<any[]> => {
+  const returnedValue = await teams.map(async (team: any) => {
+    const users = await User.findAll({
+      attributes: ['name', 'lastname'],
+      include: [
+        {
+          model: Team,
+          where: { id: team.id },
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+    return {
+      ...team,
+      users,
+    };
+  });
+  return await Promise.all(returnedValue);
+};
+
 async function init(): Promise<any> {
   const sectors = await getUsersBySector();
   createTeamsBySector(sectors);
