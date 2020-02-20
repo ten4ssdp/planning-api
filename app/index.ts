@@ -104,12 +104,12 @@ db.sync()
 
 // routes
 app.use('/api', indexRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api', vehicleRoutes);
-app.use('/api', hotelRoutes);
-app.use('/api', sectorRoutes);
-app.use('/api', parkingRoutes);
-app.use('/api/mickey', mickeyRoutes);
+app.use('/api/user', verify, userRoutes);
+app.use('/api', verify, vehicleRoutes);
+app.use('/api', verify, hotelRoutes);
+app.use('/api', verify, sectorRoutes);
+app.use('/api', verify, parkingRoutes);
+app.use('/api/mickey', verify, mickeyRoutes);
 
 // gestion des erreurs
 // app.use((err, req, res, next) => {
