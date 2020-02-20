@@ -4,6 +4,8 @@ yarn.lock
 package-lock.json
 yarn-error.log
 
+apidoc/
+
 # macOS
 .DS_Store
 

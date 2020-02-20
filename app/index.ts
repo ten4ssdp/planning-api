@@ -84,6 +84,7 @@ db.sync()
       Visit.create({
         ...visit,
         date,
+        status: 1,
         rate: parseFloat(visit.rate.toString().replace(',', '.')),
       });
     });

@@ -3,99 +3,66 @@ import User from '../models/User';
 import Role from '../models/Role';
 import Sector from '../models/Sector';
 import { Sequelize } from 'sequelize';
-import Mickey, { getHotelsAndVisits, getTeamsGroupedBySector } from '../Mickey';
+import Mickey, {
+  getHotelsAndVisits,
+  generatesPlanning,
+  getTeamsGroupedBySector,
+  getVisits,
+  getWeeksTeamsFromDate,
+} from '../Mickey';
 import Visit from '../models/Visit';
 import Hotel from '../models/Hotel';
+import Team from '../models/Team';
+import { getNumberOfWeek } from '../utils';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const visits = await Sector.findAll({
-    attributes: ['name'],
-    group: ['sector.id'],
-  })
-    .map(sector => sector.name)
-    .reduce(async (sectorsPromise, sector) => {
-      const sectorsMutated = await sectorsPromise;
-
-      const hotels = await Hotel.findAll({
-        include: [
-          {
-            model: Visit,
-          },
-          {
-            model: Sector,
-            where: {
-              name: sector,
-            },
-          },
-        ],
-        order: [[Visit, 'date', 'ASC NULLS FIRST']],
-      });
-
-      const sectorsRows = hotels;
-      sectorsMutated[sector] = [
-        ...(sectorsMutated[sector] || []),
-        ...sectorsRows,
-      ];
-
-      return sectorsMutated;
-    }, {});
-  return res.send(visits);
-});
-router.get('/sector', async (req, res) => {
-  const sectors = await Sector.findAll({
-    group: ['sector.id'],
-  })
-    .map(sector => sector.name)
-    .reduce(async (sectorsPromise, sector) => {
-      const sectorsMutated = await sectorsPromise;
-
-      const sectorsRows = await User.findAll({
-        order: [Sequelize.fn('RANDOM')],
-        include: [
-          {
-            model: Role,
-            where: {
-              name: 'Intervenant Terrain',
-            },
-          },
-          {
-            model: Sector,
-            where: {
-              name: sector,
-            },
-          },
-        ],
-      });
-
-      sectorsMutated[sector] = [
-        ...(sectorsMutated[sector] || []),
-        ...sectorsRows,
-      ];
-
-      return sectorsMutated;
-    }, {});
-  return res.send(sectors);
-});
-
-router.get('/hotels', async (req, res) => {
+router.get('/visits', async (req, res) => {
   const hotels = await getHotelsAndVisits();
-  res.send(hotels);
+  const teams = await getTeamsGroupedBySector();
+  const visits = await getVisits(hotels, teams);
+  res.send(visits);
 });
-router.get('/teams', async (req, res) => {
+
+router.get('/teams/', async (req, res) => {
   const teams = await getTeamsGroupedBySector();
   res.send(teams);
 });
-router.get('/visits', async (req, res) => {
+
+router.get('/teams/:date', async (req, res) => {
+  if (!req.params.date) throw new Error('No date');
+  const teams = await getWeeksTeamsFromDate(new Date(req.params.date));
+  res.send(teams);
+});
+
+router.get('/visits/:teamId/:date', async (req, res) => {
+  if (!req.params.date) throw new Error('No date');
+  if (!req.params.teamId) throw new Error('No teamId');
+  let plannedVisits: any = [];
   const visits = await Visit.findAll({
     where: {
       status: 0,
+      teamId: req.params.teamId,
     },
-    order: ['date'],
+    raw: true,
+  }).filter(
+    // get next week's team
+    visit =>
+      getNumberOfWeek(new Date(req.params.date)) ===
+      getNumberOfWeek(new Date(visit.date)),
+  );
+  const teams = await getWeeksTeamsFromDate(new Date(req.params.date));
+  teams.map(team => {
+    if (
+      getNumberOfWeek(new Date(team.date) || new Date()) ===
+      getNumberOfWeek(new Date()) + 1
+    ) {
+      plannedVisits = [...plannedVisits, ...generatesPlanning(visits)];
+    }
   });
-  res.send(visits);
+  res.send(plannedVisits);
 });
+
 router.get('/main', (req, res) => {
   Mickey.init();
   res.send({ yolo: 'yolo' });
