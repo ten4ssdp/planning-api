@@ -223,8 +223,10 @@ export const dispatchHotelsToTeams = (teams, hotels: Hotel[]) => {
  * @param hotels hotels grouped by sectors
  * @param teams teams grouped by sectors
  */
-export const getVisits = async (hotels, teams): Promise<Visit[]> => {
-  const sectors = await Sector.findAll().map(sector => sector.name);
+export const getVisits = async (hotels, teams) => {
+  const sectors = await Sector.findAll({
+    group: ['sector.id'],
+  }).map(sector => sector.name);
   const visits = sectors.reduce((sectorsMutated, sectorName) => {
     const sectorsHotel = hotels[sectorName];
     const sectorsTeams = teams[sectorName];
@@ -244,11 +246,11 @@ export const getVisits = async (hotels, teams): Promise<Visit[]> => {
  * @param visits visits grouped by sectors and teams
  */
 export const createVisits = async visits => {
-  const createVisit = async (hotelId, teamId, date): Promise<any> => {
+  const createVisit = async (hotel, teamId, date): Promise<any> => {
     try {
       await Visit.create({
         teamId,
-        hotelId,
+        hotelId: hotel.hotelId,
         date,
       });
     } catch (err) {
@@ -263,8 +265,8 @@ export const createVisits = async visits => {
   sectorsNames.map(sectorName => {
     const teams = Object.keys(visits[sectorName]);
     teams.map(teamId => {
-      visits[sectorName][teamId].map(hotelId => {
-        return createVisit(hotelId, teamId, date);
+      visits[sectorName][teamId].map(hotel => {
+        return createVisit(hotel, teamId, date);
       });
     });
   });
