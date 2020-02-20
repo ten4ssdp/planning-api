@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 import express from 'express';
-import paginate from '../helpers/paginate';
 import verifyPermission from '../helpers/verifyPermission';
 import Role from '../models/Role';
 import Sector from '../models/Sector';
@@ -233,26 +232,21 @@ router.post(
  * @apiParam {Number} page (query) Page number for pagination
  * @apiparam {Number} pageSize (query) Number of items for each page
  *
- * @apiSuccess {Number}   count             the number of returned Users.
- * @apiSuccess {Object[]} rows              list of User.
- * @apiSuccess {Number}   rows.id           ID of the User.
- * @apiSuccess {String}   rows.name         name of the User.
- * @apiSuccess {String}   rows.lastname     last name of the User.
- * @apiSuccess {String}   rows.address      address of the User.
- * @apiSuccess {String}   rows.email        email of the User.
- * @apiSuccess {Object}   rows.role         informations about User role.
- * @apiSuccess {Number}   rows.role.id      ID of the User Role.
- * @apiSuccess {String}   rows.role.name    name of the User Role.
- * @apiSuccess {Object}   rows.sector       informations about the User Sector.
- * @apiSuccess {Number}   rows.sector.id    ID of the User Sector.
- * @apiSuccess {String}   rows.sector.name  name of the User Sector.
+ * @apiSuccess {Object[]} users              list of User.
+ * @apiSuccess {Number}   users.id           ID of the User.
+ * @apiSuccess {String}   users.name         name of the User.
+ * @apiSuccess {String}   users.lastname     last name of the User.
+ * @apiSuccess {String}   users.address      address of the User.
+ * @apiSuccess {String}   users.email        email of the User.
+ * @apiSuccess {Object}   users.role         informations about User role.
+ * @apiSuccess {Number}   users.role.id      ID of the User Role.
+ * @apiSuccess {String}   users.role.name    name of the User Role.
+ * @apiSuccess {Object}   users.sector       informations about the User Sector.
+ * @apiSuccess {Number}   users.sector.id    ID of the User Sector.
+ * @apiSuccess {String}   users.sector.name  name of the User Sector.
  */
 router.get('/', async function(req, res): Promise<void> {
-  const page: string = req.query.page || '0';
-  const pageSize: string = req.query.pageSize || '20';
-
-  const users: User[] = await User.findAndCountAll({
-    ...paginate(parseInt(page), parseInt(pageSize)),
+  const users: User[] = await User.findAll({
     attributes: ['id', 'name', 'lastname', 'address', 'email'],
     include: [
       {
