@@ -1,28 +1,28 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
-import verifyToken from '../helpers/verifyToken';
-import User from '../models/User';
-import paginate from '../helpers/paginate';
-import ErrorHandler from '../helpers/error';
 import bcrypt from 'bcrypt';
+import express from 'express';
+import paginate from '../helpers/paginate';
 import verifyPermission from '../helpers/verifyPermission';
-import Sector from '../models/Sector';
 import Role from '../models/Role';
+import Sector from '../models/Sector';
+import User from '../models/User';
 
 const router = express.Router();
 
 router.use(verifyPermission);
 
 // supprimer un user
-router.delete('/:id', async (req, res) => {
+router.delete('/:id(\\d+)', async (req, res) => {
   try {
-    await User.destroy({
+    const user = await User.destroy({
       where: {
         id: req.params.id,
       },
     });
+    if (!user) throw new Error(`ID ${req.params.id} not delete`);
+
+    res.send(user);
   } catch (err) {
-    res.status(500);
+    res.status(404).send(err.message);
   }
 });
 

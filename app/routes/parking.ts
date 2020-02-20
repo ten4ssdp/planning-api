@@ -26,14 +26,14 @@ const router = express.Router();
  */
 router.get('/parkings', async (req, res) => {
   try {
-    const parkings = await Parking.findAll({ 
+    const parkings = await Parking.findAll({
       include: [
         {
-          model: Vehicle
-        }
+          model: Vehicle,
+        },
       ],
       ...(req.query.limit && { limit: req.query.limit }),
-      order: [['address', 'ASC']]
+      order: [['address', 'ASC']],
     });
     res.send(parkings);
   } catch (error) {
@@ -47,7 +47,7 @@ router.get('/parkings', async (req, res) => {
  * @apiGroup Parking
  *
  * @apiParam {Number} id Parking unique ID.
- * 
+ *
  * @apiSuccess {Number} id ID of the sector.
  * @apiSuccess {String} address Address of the parking.
  * @apiSuccess {Number} zipCode Zip code of the parking.
@@ -82,7 +82,7 @@ router.get('/parking/:id(\\d+)', async (req, res) => {
  * @apiGroup Parking
  *
  * @apiParam {Number} id Parking unique ID.
- * 
+ *
  * @apiSuccess {Number} id ID of the sector.
  * @apiSuccess {String} address Address of the parking.
  * @apiSuccess {Number} zipCode Zip code of the parking.
@@ -94,24 +94,27 @@ router.put('/parking/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const parking = await Parking.update({ ...req.body },{
-      where: { id: req.params.id },
-      returning: true,
-      validate: true
-    });
+    const parking = await Parking.update(
+      { ...req.body },
+      {
+        where: { id: req.params.id },
+        returning: true,
+        validate: true,
+      },
+    );
     if (!parking[0]) throw new Error(`ID ${req.params.id} does not exist`);
 
     res.send(parking);
   } catch (error) {
     res.status(404).send({ error: error.message });
   }
-})
+});
 
 /**
  * @api {post} /parking Add a parking
  * @apiName AddParking
  * @apiGroup Parking
- * 
+ *
  * @apiSuccess {Number} id ID of the sector.
  * @apiSuccess {String} address Address of the parking.
  * @apiSuccess {Number} zipCode Zip code of the parking.
@@ -142,7 +145,7 @@ router.post('/parking', async (req, res) => {
  * @apiGroup Parking
  *
  * @apiParam {Number} id Parking unique ID.
- * 
+ *
  * @apiSuccess {Number} id ID of the sector.
  * @apiSuccess {String} address Address of the parking.
  * @apiSuccess {Number} zipCode Zip code of the parking.

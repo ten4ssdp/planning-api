@@ -4,29 +4,29 @@ import express from 'express';
 import kebabCase from 'lodash.kebabCase';
 import moment from 'moment';
 import db from './connexion';
-import { handleError } from '../app/helpers/error';
-import indexRoutes from './routes/index';
-import userRoutes from './routes/user';
-import vehicleRoutes from './routes/vehicle';
-import hotelRoutes from './routes/hotel';
-import sectorRoutes from './routes/sector';
-import parkingRoutes from './routes/parking';
-import mickeyRoutes from './routes/mickey';
-import Role from './models/Role';
-import User from './models/User';
+import verify from './helpers/verifyToken';
 import Hotel from './models/Hotel';
 import hotelsJSON from './models/json/hotels.json';
+import parkingsJSON from './models/json/parkings.json';
 import rolesJSON from './models/json/roles.json';
 import sectorsJSON from './models/json/sectors.json';
 import usersJSON from './models/json/users.json';
 import vehiclesJSON from './models/json/vehicles.json';
 import visitsJSON from './models/json/visits.json';
-import parkingsJSON from './models/json/parkings.json';
+import Parking from './models/Parking';
+import Role from './models/Role';
 import Sector from './models/Sector';
+import User from './models/User';
 import Vehicle from './models/Vehicle';
 import Visit from './models/Visit';
-import Parking from './models/Parking';
-import verify from './helpers/verifyToken';
+import hotelRoutes from './routes/hotel';
+import indexRoutes from './routes/index';
+import mickeyRoutes from './routes/mickey';
+import parkingRoutes from './routes/parking';
+import sectorRoutes from './routes/sector';
+import userRoutes from './routes/user';
+import vehicleRoutes from './routes/vehicle';
+import bcrypt from 'bcrypt';
 
 const app = express();
 const PORT = process.env.PORT || '5000';
@@ -62,11 +62,11 @@ db.sync()
     });
 
     // add users to DB
-    usersJSON.map(user => {
+    usersJSON.map(async user => {
       User.create({
         ...user,
         email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
-        password: '1234',
+        password: await bcrypt.hash('1234', 10),
       });
     });
 

@@ -19,19 +19,19 @@ router.post(
         .json({ error: 'Veuillez entrer un Mot de passe et un Email valide.' });
     }
 
-    let userFound = await User.findOne({
+    const userFound = await User.findOne({
       include: [{ model: Role }, { model: Sector }],
       where: { email },
       raw: true,
     });
 
-    let matchPwd = await bcrypt.compare(password, userFound.password);
+    const matchPwd = await bcrypt.compare(password, userFound.password);
 
     if (!userFound || !matchPwd) {
       res.status(400).json({ error: 'Email ou Mot de passe invalide.' });
     }
 
-    let token = jwt.sign(
+    const token = jwt.sign(
       {
         name: userFound.name,
         lastname: userFound.lastname,
