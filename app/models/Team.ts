@@ -6,6 +6,7 @@ import Vehicle from './Vehicle';
 class Team extends Model {
   public id!: number;
   public name!: string;
+  public date!: string;
 }
 
 Team.init(
@@ -37,6 +38,5 @@ Team.init(
     sequelize: db,
   },
 );
-
 
 export default Team;

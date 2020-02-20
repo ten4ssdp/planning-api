@@ -6,6 +6,8 @@ import Team from './models/Team';
 import TeamComposition from './models/TeamComposition';
 import Hotel from './models/Hotel';
 import Visit from './models/Visit';
+import moment = require('moment');
+import { getNumberOfWeek } from './utils';
 
 const USERS_BY_TEAM = 2;
 const VISITS_BY_DAY = 5;
@@ -60,13 +62,16 @@ const calculateHotelScore = (hotel: Hotel): number => {
       const currentDate = new Date().getTime();
       const fiveMonthAgo = currentDate - new Date().setMonth(-6);
       const threeMonthAgo = currentDate - new Date().setMonth(-4);
-      const lastVisitDate = new Date(hotel.visits?.[0]?.date || 1).getTime();
+      const lastVisit = hotel?.visits?.[0];
+      const lastVisitDate = new Date(lastVisit?.date || 1).getTime();
       const visitOffset = currentDate - lastVisitDate;
 
       if (visitOffset > fiveMonthAgo) {
         score += 10;
       } else if (visitOffset > threeMonthAgo) {
         score += 5;
+      } else if (visitOffset < threeMonthAgo && lastVisit?.status === 0) {
+        score += 30;
       } else if (visitOffset < threeMonthAgo) {
         score += 1;
       }
@@ -108,7 +113,10 @@ export const getHotelsAndVisits = async (): Promise<any> => {
             },
           },
         ],
-        order: [[Visit, 'date', 'ASC NULLS FIRST']],
+        order: [
+          [Visit, 'date', 'DESC NULLS FIRST'],
+          [Visit, 'status', 'ASC'],
+        ],
       });
 
       const sectorsRows = hotels
@@ -136,7 +144,10 @@ export const createTeamsBySector = sectors => {
       const teamName = `team${i + 1} ${key}`;
       const binome = users.splice(0, USERS_BY_TEAM);
       const sectorId = binome[0].sectorId;
-      const date = new Date();
+      const today = new Date();
+      const date: Date = new Date(
+        today.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7)),
+      );
       const team = await Team.create({
         name: teamName,
         date,
@@ -169,6 +180,7 @@ export const getTeamsGroupedBySector = async () => {
             },
           },
         ],
+        raw: true,
       });
 
       const sectorsRows = teams;
@@ -201,7 +213,7 @@ export const dispatchHotelsToTeams = (teams, hotels: Hotel[]) => {
   return visits.reduce((mutatedVisits, visit) => {
     return {
       ...mutatedVisits,
-      [visit.teamId]: [...(mutatedVisits[visit.teamId] || []), visit.hotelId],
+      [visit.teamId]: [...(mutatedVisits[visit.teamId] || []), visit],
     };
   }, {});
 };
@@ -211,10 +223,8 @@ export const dispatchHotelsToTeams = (teams, hotels: Hotel[]) => {
  * @param hotels hotels grouped by sectors
  * @param teams teams grouped by sectors
  */
-export const getVisits = async (hotels, teams) => {
-  const sectors = await Sector.findAll({
-    group: ['sector.id'],
-  }).map(sector => sector.name);
+export const getVisits = async (hotels, teams): Promise<Visit[]> => {
+  const sectors = await Sector.findAll().map(sector => sector.name);
   const visits = sectors.reduce((sectorsMutated, sectorName) => {
     const sectorsHotel = hotels[sectorName];
     const sectorsTeams = teams[sectorName];
@@ -235,22 +245,90 @@ export const getVisits = async (hotels, teams) => {
  */
 export const createVisits = async visits => {
   const createVisit = async (hotelId, teamId, date): Promise<any> => {
-    await Visit.create({
-      teamId,
-      hotelId,
-      date,
-    });
+    try {
+      await Visit.create({
+        teamId,
+        hotelId,
+        date,
+      });
+    } catch (err) {
+      throw new Error(err);
+    }
   };
   const sectorsNames = Object.keys(visits);
-  const date = new Date();
+  const today: Date = new Date();
+  const date = new Date(
+    today.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7)),
+  );
   sectorsNames.map(sectorName => {
     const teams = Object.keys(visits[sectorName]);
     teams.map(teamId => {
-      visits[sectorName][teamId].map(hotelId =>
-        createVisit(hotelId, teamId, date),
-      );
+      visits[sectorName][teamId].map(hotelId => {
+        return createVisit(hotelId, teamId, date);
+      });
     });
   });
+};
+
+export const getWeeksTeamsFromDate = async (
+  date = new Date(),
+): Promise<Team[]> => {
+  const teamsGroupedBySector = await getTeamsGroupedBySector();
+  const teams = [
+    ...Object.keys(teamsGroupedBySector).flatMap(
+      sector => teamsGroupedBySector[sector],
+    ),
+  ].filter(
+    team =>
+      getNumberOfWeek(new Date(date)) === getNumberOfWeek(new Date(team.date)),
+  );
+  return teams;
+};
+
+export const getVisitsByTeam = async (teamId): Promise<Visit[]> => {
+  return await Visit.findAll({
+    where: {
+      teamId,
+    },
+  });
+};
+
+export const generatesPlanning = (visits: Visit[]) => {
+  const today: Date = new Date();
+  const nextMonday: Date = new Date(
+    today.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7)),
+  );
+  let currentDay: Date = nextMonday;
+  let plannedVisits: any = [];
+  while (visits.length > 0) {
+    const dayVisits = visits.splice(0, VISITS_BY_DAY);
+    let hour = 9;
+    currentDay = new Date(currentDay.setHours(hour, 0));
+    // for each visit of a day
+    for (let i = 0; i < dayVisits.length; i++) {
+      const visit = dayVisits[i];
+      plannedVisits = [
+        ...plannedVisits,
+        {
+          ...visit,
+          start: new Date(currentDay),
+          end: new Date(currentDay.setHours(hour + 2, 0)),
+        },
+      ];
+      hour += 2;
+      if (hour === 13) {
+        hour += 1; // pause midi
+      }
+      currentDay = new Date(currentDay.setHours(hour, 0));
+    }
+    // TODO: ajouter le jour de repos
+    currentDay = new Date(
+      moment(currentDay)
+        .add(1, 'days')
+        .valueOf(),
+    );
+  }
+  return plannedVisits;
 };
 
 async function init(): Promise<any> {
@@ -263,12 +341,6 @@ async function init(): Promise<any> {
   createVisits(visits);
 
   return { sectors };
-}
-
-try {
-  init();
-} catch (error) {
-  console.log(error);
 }
 
 export default {
