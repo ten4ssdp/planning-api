@@ -24,20 +24,20 @@ const router = express.Router();
  * @apiSuccess {String} hotels.city City of the Hotel.
  * @apiSuccess {String} hotels.createdAt Hotel row creation date.
  * @apiSuccess {String} hotels.updatedAt Hotel row update date.
- * 
+ *
  */
 router.get('/sectors', async (req, res) => {
   try {
     const sectors = await Sector.findAll({
       include: [
         {
-          model: Team
+          model: Team,
         },
         {
-          model: Hotel
+          model: Hotel,
         },
         {
-          model: User
+          model: User,
         },
       ],
       ...(req.query.limit && { limit: req.query.limit }),
@@ -52,7 +52,7 @@ router.get('/sectors', async (req, res) => {
  * @api {get} /sector/:id Request a sector
  * @apiName GetSector
  * @apiGroup Sector
- * 
+ *
  * @apiParam {Number} id Sector unique ID.
  *
  * @apiSuccess {Number} id ID of the sector.
@@ -69,7 +69,7 @@ router.get('/sectors', async (req, res) => {
  * @apiSuccess {String} hotels.city City of the Hotel.
  * @apiSuccess {String} hotels.createdAt Hotel row creation date.
  * @apiSuccess {String} hotels.updatedAt Hotel row update date.
- * 
+ *
  */
 router.get('/sector/:id(\\d+)', async (req, res) => {
   try {
@@ -88,42 +88,45 @@ router.get('/sector/:id(\\d+)', async (req, res) => {
  * @api {put} /sector/:id Update a sector
  * @apiName UpdateSector
  * @apiGroup Sector
- * 
+ *
  * @apiParam {Number} id Sector unique ID.
  *
  * @apiSuccess {Number} id ID of the sector.
  * @apiSuccess {String} name Name of the sector.
  * @apiSuccess {String} createdAt Row creation date.
  * @apiSuccess {String} updatedAt Row update date.
- * 
+ *
  */
 router.put('/sector/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const sector = await Sector.update({ ...req.body },{
-      where: { id: req.params.id },
-      returning: true,
-      validate: true
-    });
+    const sector = await Sector.update(
+      { ...req.body },
+      {
+        where: { id: req.params.id },
+        returning: true,
+        validate: true,
+      },
+    );
     if (!sector[0]) throw new Error(`ID ${req.params.id} does not exist`);
 
     res.send(sector);
   } catch (error) {
     res.status(404).send({ error: error.message });
   }
-})
+});
 
 /**
  * @api {post} /sector Add a sector
  * @apiName AddSector
  * @apiGroup Sector
- * 
+ *
  * @apiSuccess {Number} id ID of the sector.
  * @apiSuccess {String} name Name of the sector.
  * @apiSuccess {String} createdAt Row creation date.
  * @apiSuccess {String} updatedAt Row update date.
- * 
+ *
  */
 router.post('/sector', async (req, res) => {
   try {
@@ -146,14 +149,14 @@ router.post('/sector', async (req, res) => {
  * @api {delete} /sector/:id Delete a sector
  * @apiName DeleteSector
  * @apiGroup Sector
- * 
+ *
  * @apiParam {Number} id Sector unique ID.
  *
  * @apiSuccess {Number} id ID of the sector.
  * @apiSuccess {String} name Name of the sector.
  * @apiSuccess {String} createdAt Row creation date.
  * @apiSuccess {String} updatedAt Row update date.
- * 
+ *
  */
 router.delete('/sector/:id(\\d+)', async (req, res) => {
   try {

@@ -29,17 +29,17 @@ const router = express.Router();
  */
 router.get('/vehicles', async (req, res) => {
   try {
-    const vehicles = await Vehicle.findAll({ 
+    const vehicles = await Vehicle.findAll({
       include: [
         {
-          model: Parking
+          model: Parking,
         },
         {
-          model: Team
-        }
+          model: Team,
+        },
       ],
       ...(req.query.limit && { limit: req.query.limit }),
-      order: [['numberPlate', 'ASC']]
+      order: [['numberPlate', 'ASC']],
     });
     res.send(vehicles);
   } catch (error) {
@@ -51,7 +51,7 @@ router.get('/vehicles', async (req, res) => {
  * @api {get} /vehicle/:id Request a vehicle
  * @apiName GetVehicle
  * @apiGroup Vehicle
- * 
+ *
  * @apiParam {Number} id Vehicle unique ID.
  *
  * @apiSuccess {Number} id ID of the vehicle.
@@ -84,12 +84,11 @@ router.get('/vehicle/:id(\\d+)', async (req, res) => {
   }
 });
 
-
 /**
  * @api {put} /vehicle/:id Update a vehicle
  * @apiName UpdateVehicle
  * @apiGroup Vehicle
- * 
+ *
  * @apiParam {Number} id Vehicle unique ID.
  *
  * @apiSuccess {Number} id ID of the vehicle.
@@ -105,24 +104,27 @@ router.put('/vehicle/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const vehicle = await Vehicle.update({ ...req.body },{
-      where: { id: req.params.id },
-      returning: true,
-      validate: true
-    });
+    const vehicle = await Vehicle.update(
+      { ...req.body },
+      {
+        where: { id: req.params.id },
+        returning: true,
+        validate: true,
+      },
+    );
     if (!vehicle[0]) throw new Error(`ID ${req.params.id} does not exist`);
 
     res.send(vehicle);
   } catch (error) {
     res.status(404).send({ error: error.message });
   }
-})
+});
 
 /**
  * @api {post} /vehicle Add a vehicle
  * @apiName AddVehicle
  * @apiGroup Vehicle
- * 
+ *
  * @apiSuccess {Number} id ID of the vehicle.
  * @apiSuccess {String} numberPlate NumberPlate of the vehicle.
  * @apiSuccess {String} type Model of the vehicle.
@@ -130,7 +132,7 @@ router.put('/vehicle/:id(\\d+)', async (req, res) => {
  * @apiSuccess {String} updatedAt Row update date.
  * @apiSuccess {Number} parkingId ID of the linked parking row.
  * @apiSuccess {Number} teamId ID of the linked team row.
- * 
+ *
  */
 router.post('/vehicle', async (req, res) => {
   try {
@@ -153,7 +155,7 @@ router.post('/vehicle', async (req, res) => {
  * @api {delete} /vehicle/:id Delete a vehicle
  * @apiName DeleteVehicle
  * @apiGroup Vehicle
- * 
+ *
  * @apiParam {Number} id Vehicle unique ID.
  *
  * @apiSuccess {Number} id ID of the vehicle.
@@ -163,7 +165,7 @@ router.post('/vehicle', async (req, res) => {
  * @apiSuccess {String} updatedAt Row update date.
  * @apiSuccess {Number} parkingId ID of the linked parking row.
  * @apiSuccess {Number} teamId ID of the linked team row.
- * 
+ *
  */
 router.delete('/vehicle/:id(\\d+)', async (req, res) => {
   try {

@@ -9,6 +9,9 @@ function verify(req, res, next): void {
 
   try {
     const verified = jwt.verify(token, process.env.JWTSECRET);
+
+    // TODO: check if the user exist in the DB
+
     req.user = verified;
     next();
   } catch (error) {

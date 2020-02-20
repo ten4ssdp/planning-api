@@ -9,7 +9,7 @@ const router = express.Router();
  * @api {get} /hotels Request all hotels
  * @apiName GetHotels
  * @apiGroup Hotel
- * 
+ *
  * @apiSuccess {Number} id ID of the hotel.
  * @apiSuccess {String} address Address of the hotel.
  * @apiSuccess {Number} zipCode Zip code of the hotel.
@@ -55,9 +55,9 @@ router.get('/hotels', async (req, res) => {
  * @api {get} /hotel/:id Request an hotel
  * @apiName GetHotel
  * @apiGroup Hotel
- * 
+ *
  * @apiParam {Number} id Hotel unique ID.
- * 
+ *
  * @apiSuccess {Number} id ID of the hotel.
  * @apiSuccess {String} address Address of the hotel.
  * @apiSuccess {Number} zipCode Zip code of the hotel.
@@ -93,7 +93,7 @@ router.get('/hotel/:id(\\d+)', async (req, res) => {
  * @api {post} /hotel Add an hotel
  * @apiName AddHotel
  * @apiGroup Hotel
- * 
+ *
  * @apiSuccess {Number} id ID of the hotel.
  * @apiSuccess {String} address Address of the hotel.
  * @apiSuccess {Number} zipCode Zip code of the hotel.
@@ -123,9 +123,9 @@ router.post('/hotel', async (req, res) => {
  * @api {put} /hotel/:id Update an hotel
  * @apiName UpdateHotel
  * @apiGroup Hotel
- * 
+ *
  * @apiParam {Number} id Hotel unique ID.
- * 
+ *
  * @apiSuccess {Number} id ID of the hotel.
  * @apiSuccess {String} address Address of the hotel.
  * @apiSuccess {Number} zipCode Zip code of the hotel.
@@ -138,26 +138,29 @@ router.put('/hotel/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const hotel = await Hotel.update({ ...req.body },{
-      where: { id: req.params.id },
-      returning: true,
-      validate: true
-    });
+    const hotel = await Hotel.update(
+      { ...req.body },
+      {
+        where: { id: req.params.id },
+        returning: true,
+        validate: true,
+      },
+    );
     if (!hotel[0]) throw new Error(`ID ${req.params.id} does not exist`);
 
     res.send(hotel);
   } catch (error) {
     res.status(404).send({ error: error.message });
   }
-})
+});
 
 /**
  * @api {delete} /hotel/:id Delete an hotel
  * @apiName DeleteHotel
  * @apiGroup Hotel
- * 
+ *
  * @apiParam {Number} id Hotel unique ID.
- * 
+ *
  * @apiSuccess {Number} id ID of the hotel.
  * @apiSuccess {String} address Address of the hotel.
  * @apiSuccess {Number} zipCode Zip code of the hotel.
