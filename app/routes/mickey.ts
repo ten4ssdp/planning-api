@@ -1,8 +1,19 @@
 import express from 'express';
-import Mickey, { generatesPlanning, getWeeksTeamsFromDate } from '../Mickey';
+import Mickey, {
+  generatesPlanning,
+  getWeeksTeamsFromDate,
+  getVisits,
+  getTeamsGroupedBySector,
+  getHotelsAndVisits,
+  getUsersFromTeamId,
+  setUsersToVisits,
+} from '../Mickey';
 import Visit from '../models/Visit';
 import Hotel from '../models/Hotel';
 import { getNumberOfWeek } from '../utils';
+import Team from '../models/Team';
+import TeamComposition from '../models/TeamComposition';
+import User from '../models/User';
 
 const router = express.Router();
 /**
@@ -37,10 +48,47 @@ router.post('/', (req, res) => {
  */
 router.get('/teams/:date', async (req, res) => {
   if (!req.params.date) throw new Error('No date');
-  const teams = await getWeeksTeamsFromDate(new Date(req.params.date));
+  let teams = await getWeeksTeamsFromDate(new Date(req.params.date));
+
+  teams = await setUsersToVisits(teams);
+
   res.send(teams);
 });
+router.get('/visits', async (req, res) => {
+  let visits = await Visit.findAll({
+    where: {
+      status: 0,
+    },
+    include: [
+      Hotel,
+      {
+        model: Team,
+      },
+    ],
+    raw: true,
+    nest: true,
+  });
 
+  visits = visits.map(async visit => {
+    const users = await User.findAll({
+      attributes: ['name', 'lastname'],
+      include: [
+        {
+          model: Team,
+          where: { id: visit.teamId },
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+    return {
+      ...visit,
+      users,
+    };
+  });
+
+  res.send(visits);
+});
 /**
  * @api {get} /mickey/visits/:teamId/:date Get visits by team
  * @apiName GetVisitsByTeam
