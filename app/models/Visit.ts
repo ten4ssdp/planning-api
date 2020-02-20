@@ -8,6 +8,7 @@ class Visit extends Model {
   public rate!: number;
   public date!: string;
   public status!: number;
+  public hotelId!: number;
 }
 
 Visit.init(

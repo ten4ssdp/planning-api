@@ -181,6 +181,7 @@ export const getTeamsGroupedBySector = async () => {
           },
         ],
         raw: true,
+        nest: true,
       });
 
       const sectorsRows = teams;

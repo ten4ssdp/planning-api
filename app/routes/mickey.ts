@@ -39,13 +39,21 @@ router.get('/visits/:teamId/:date', async (req, res) => {
   if (!req.params.date) throw new Error('No date');
   if (!req.params.teamId) throw new Error('No teamId');
   let plannedVisits: any = [];
-  const visits = await Visit.findAll({
+  let visits = await Visit.findAll({
     where: {
       status: 0,
       teamId: req.params.teamId,
     },
+    include: [
+      {
+        model: Hotel,
+      },
+    ],
     raw: true,
-  }).filter(
+    nest: true,
+  });
+
+  visits = visits.filter(
     // get next week's team
     visit =>
       getNumberOfWeek(new Date(req.params.date)) ===
