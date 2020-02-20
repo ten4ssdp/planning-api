@@ -10,7 +10,15 @@ const router = express.Router();
 
 router.use(verifyPermission);
 
-// supprimer un user
+/**
+ * @api {delete} /user/:id/ Delete a User
+ * @apiName DeleteUser
+ * @apiGroup User
+ *
+ * @apiParam {Number} id    (param) ID of the selected User
+ *
+ * @apiParam {Number} count  number of deleted rows
+ */
 router.delete('/:id(\\d+)', async (req, res) => {
   try {
     const user = await User.destroy({
@@ -26,7 +34,31 @@ router.delete('/:id(\\d+)', async (req, res) => {
   }
 });
 
-// modifier un user
+/**
+ * @api {put} /user/:id/ Update a User
+ * @apiName UpdateUser
+ * @apiGroup User
+ *
+ * @apiParam {Number} id the unique ID of the selected User
+ *
+ * @apiParam {Object} body            shape of the request body.
+ * @apiParam {String} body.name       name of the User.
+ * @apiParam {String} body.lastname   last name of the User.
+ * @apiParam {String} body.address    address of the User.
+ * @apiParam {String} body.email      email of the User.
+ * @apiParam {String} body.password   secret password of the User.
+ * @apiParam {String} body.roleId     ID of the Role of the User.
+ * @apiParam {String} body.sectorId   ID of the Sector of the User.
+ *
+ * @apiSuccess {Number} id              ID of the User.
+ * @apiSuccess {String} name            name of the User.
+ * @apiSuccess {String} lastname        last name of the User.
+ * @apiSuccess {String} address         address of the User.
+ * @apiSuccess {String} email           email of the User.
+ * @apiSuccess {Number} roleId          unique ID of the Role of the User.
+ * @apiSuccess {Number} sectorId        unique ID of the Sector of the User.
+ *
+ */
 router.put('/:id(\\d+)', async (req, res) => {
   try {
     const hash = await bcrypt.hash(req.body.password, 10);
@@ -41,13 +73,25 @@ router.put('/:id(\\d+)', async (req, res) => {
         roleId: req.body.roleId,
         sectorId: req.body.sectorId,
       },
-      { where: { id: req.params.id }, returning: true },
+      {
+        where: { id: req.params.id },
+        returning: true,
+        validate: true,
+      },
     );
 
     const [rowsUpdate, [updatedUser]] = result;
 
     if (updatedUser) {
-      res.status(200).json(updatedUser);
+      res.status(200).json({
+        id: updatedUser.id,
+        name: updatedUser.name,
+        lastname: updatedUser.lastname,
+        address: updatedUser.address,
+        email: updatedUser.email,
+        roleId: updatedUser.roleId,
+        sectorId: updatedUser.sectorId,
+      });
     } else {
       res.status(400).json({ error: "Cet utilisateur n'existe pas." });
     }
@@ -56,6 +100,24 @@ router.put('/:id(\\d+)', async (req, res) => {
   }
 });
 
+/**
+ * @api {get} /user/:id/ Request a User
+ * @apiName GetUser
+ * @apiGroup User
+ *
+ * @apiParam {Number} id the unique ID of the selected User
+ *
+ * @apiSuccess {Number} id            ID of the User.
+ * @apiSuccess {String} name          name of the User.
+ * @apiSuccess {String} lastname      last name of the User.
+ * @apiSuccess {String} address       address of the User.
+ * @apiSuccess {Object} role          User Role informations.
+ * @apiSuccess {Number} role.id       ID of the User Role.
+ * @apiSuccess {String} role.name     name of the User Role.
+ * @apiSuccess {Object} sector        User Sector informations.
+ * @apiSuccess {Object} sector.id     ID of the User Sector.
+ * @apiSuccess {String} sector.name   name of the User Sector.
+ */
 router.get(
   '/:id(\\d+)',
   async (req, res): Promise<void> => {
@@ -63,8 +125,14 @@ router.get(
       const userFound: User = await User.findOne({
         where: { id: req.params.id },
         include: [
-          { model: Sector, attributes: ['id', 'name'] },
-          { model: Role, attributes: ['id', 'name'] },
+          {
+            model: Sector,
+            attributes: ['id', 'name'],
+          },
+          {
+            model: Role,
+            attributes: ['id', 'name'],
+          },
         ],
         attributes: ['id', 'name', 'lastname', 'address'],
         raw: true,
@@ -82,7 +150,30 @@ router.get(
   },
 );
 
-// créer un user
+/**
+ * @api {post} /user/create Create a User
+ * @apiName CreateUser
+ * @apiGroup User
+ *
+ * @apiParam {Number} id the unique ID of the selected User
+ *
+ * @apiSuccess {Object} created             informations about created User.
+ * @apiSuccess {Object} created.id          ID of the created User.
+ * @apiSuccess {String} created.name        name of the created User.
+ * @apiSuccess {String} created.lastName    last name of the created user.
+ * @apiSuccess {String} created.address     address of the created User.
+ * @apiSuccess {String} created.roleId      ID of the created User Role.
+ * @apiSuccess {String} created.sectorId    ID of the created User Sector.
+ *
+ * @apiParam {Object} body            shape of the request body.
+ * @apiParam {String} body.name       name of the User.
+ * @apiParam {String} body.lastname   last name of the User.
+ * @apiParam {String} body.address    address of the User.
+ * @apiParam {String} body.email      email of the User.
+ * @apiParam {String} body.password   secret password of the User.
+ * @apiParam {String} body.roleId     ID of the Role of the User.
+ * @apiParam {String} body.sectorId   ID of the Sector of the User.
+ */
 router.post(
   '/create',
   async (req, res): Promise<void> => {
@@ -134,13 +225,45 @@ router.post(
   },
 );
 
-// Récupérer la liste des users (par défaut)
+/**
+ * @api {put} /user/ Request all Users
+ * @apiName GetUsers
+ * @apiGroup User
+ *
+ * @apiParam {Number} page (query) Page number for pagination
+ * @apiparam {Number} pageSize (query) Number of items for each page
+ *
+ * @apiSuccess {Number}   count             the number of returned Users.
+ * @apiSuccess {Object[]} rows              list of User.
+ * @apiSuccess {Number}   rows.id           ID of the User.
+ * @apiSuccess {String}   rows.name         name of the User.
+ * @apiSuccess {String}   rows.lastname     last name of the User.
+ * @apiSuccess {String}   rows.address      address of the User.
+ * @apiSuccess {String}   rows.email        email of the User.
+ * @apiSuccess {Object}   rows.role         informations about User role.
+ * @apiSuccess {Number}   rows.role.id      ID of the User Role.
+ * @apiSuccess {String}   rows.role.name    name of the User Role.
+ * @apiSuccess {Object}   rows.sector       informations about the User Sector.
+ * @apiSuccess {Number}   rows.sector.id    ID of the User Sector.
+ * @apiSuccess {String}   rows.sector.name  name of the User Sector.
+ */
 router.get('/', async function(req, res): Promise<void> {
   const page: string = req.query.page || '0';
   const pageSize: string = req.query.pageSize || '20';
 
   const users: User[] = await User.findAndCountAll({
     ...paginate(parseInt(page), parseInt(pageSize)),
+    attributes: ['id', 'name', 'lastname', 'address', 'email'],
+    include: [
+      {
+        model: Sector,
+        attributes: ['id', 'name'],
+      },
+      {
+        model: Role,
+        attributes: ['id', 'name'],
+      },
+    ],
   });
 
   res.send(users);
