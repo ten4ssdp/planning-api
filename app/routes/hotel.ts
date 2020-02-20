@@ -80,7 +80,16 @@ router.get('/hotel/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const hotel = await Hotel.findByPk(req.params.id);
+    const hotel = await Hotel.findByPk(req.params.id, {
+      include: [
+        {
+          model: Visit,
+        },
+        {
+          model: Sector,
+        },
+      ],
+    });
     if (!hotel) throw new Error(`ID ${req.params.id} does not exist`);
 
     res.send(hotel);

@@ -75,7 +75,16 @@ router.get('/vehicle/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const vehicle = await Vehicle.findByPk(req.params.id);
+    const vehicle = await Vehicle.findByPk(req.params.id, {
+      include: [
+        {
+          model: Parking,
+        },
+        {
+          model: Team,
+        },
+      ],
+    });
     if (!vehicle) throw new Error(`ID ${req.params.id} does not exist`);
 
     res.send(vehicle);

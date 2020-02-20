@@ -75,7 +75,19 @@ router.get('/sector/:id(\\d+)', async (req, res) => {
   try {
     if (!req.params.id) throw new Error('No ID');
 
-    const sector = await Sector.findByPk(req.params.id);
+    const sector = await Sector.findByPk(req.params.id, {
+      include: [
+        {
+          model: Team,
+        },
+        {
+          model: Hotel,
+        },
+        {
+          model: User,
+        },
+      ],
+    });
     if (!sector) throw new Error(`ID ${req.params.id} does not exist`);
 
     res.send(sector);
