@@ -2,17 +2,12 @@ import express from 'express';
 import Mickey, {
   generatesPlanning,
   getWeeksTeamsFromDate,
-  getVisits,
-  getTeamsGroupedBySector,
-  getHotelsAndVisits,
-  getUsersFromTeamId,
   setUsersToVisits,
 } from '../Mickey';
 import Visit from '../models/Visit';
 import Hotel from '../models/Hotel';
 import { getNumberOfWeek } from '../utils';
 import Team from '../models/Team';
-import TeamComposition from '../models/TeamComposition';
 import User from '../models/User';
 
 const router = express.Router();
