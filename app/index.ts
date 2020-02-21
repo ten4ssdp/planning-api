@@ -27,12 +27,24 @@ import sectorRoutes from './routes/sector';
 import userRoutes from './routes/user';
 import vehicleRoutes from './routes/vehicle';
 import bcrypt from 'bcrypt';
+import path from 'path';
 
 const app = express();
 const PORT = process.env.PORT || '5000';
 
 app.use(cors());
-app.use(bodyParser());
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+// routes
+app.use('/documentation', express.static(path.resolve(__dirname + '/../apidoc')));
+app.use('/api', indexRoutes);
+app.use('/api/user', verify, userRoutes);
+app.use('/api', verify, vehicleRoutes);
+app.use('/api', verify, hotelRoutes);
+app.use('/api', verify, sectorRoutes);
+app.use('/api', verify, parkingRoutes);
+app.use('/api/mickey', verify, mickeyRoutes);
 
 db.authenticate()
   .then(() => console.log('Database connected ...'))
@@ -101,15 +113,6 @@ db.sync()
   .catch(err => {
     throw err;
   });
-
-// routes
-app.use('/api', indexRoutes);
-app.use('/api/user', verify, userRoutes);
-app.use('/api', verify, vehicleRoutes);
-app.use('/api', verify, hotelRoutes);
-app.use('/api', verify, sectorRoutes);
-app.use('/api', verify, parkingRoutes);
-app.use('/api/mickey', verify, mickeyRoutes);
 
 // gestion des erreurs
 // app.use((err, req, res, next) => {
