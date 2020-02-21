@@ -6,9 +6,10 @@ COPY package*.json ./
 
 RUN npm install
 
-RUN npm run apidoc
 
 COPY . .
+
+RUN npm run apidoc
 
 CMD ["npm", "run", "prod"]
 
