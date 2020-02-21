@@ -6,6 +6,8 @@ yarn-error.log
 
 apidoc/
 
+dist/
+
 # macOS
 .DS_Store
 

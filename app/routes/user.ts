@@ -181,16 +181,6 @@ router.post(
 
       const result = await User.findOrCreate({
         where: { email: req.body.email },
-        raw: true,
-        attributes: [
-          'id',
-          'name',
-          'lastname',
-          'address',
-          'email',
-          'roleId',
-          'sectorId',
-        ],
         defaults: {
           name: req.body.name,
           lastname: req.body.lastname,

@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "node ./app/index.ts",
     "tsc": "tsc",
-    "prod": "tsc && node ./build/server.js",
+    "prod": "tsc && node ./dist/index.js",
     "apidoc": "apidoc -i ./app -o apidoc/ -f '.*\\.ts$'"
   },
   "devDependencies": {
@@ -27,6 +27,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
+    "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.19.0",
     "apidoc": "^0.20.0",
     "bcrypt": "^3.0.8",
