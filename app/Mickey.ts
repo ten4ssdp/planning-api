@@ -1,7 +1,7 @@
 import User from './models/User';
 import Role from './models/Role';
 import Sector from './models/Sector';
-import { Sequelize } from 'sequelize';
+import { Sequelize, Op } from 'sequelize';
 import Team from './models/Team';
 import TeamComposition from './models/TeamComposition';
 import Hotel from './models/Hotel';
@@ -102,6 +102,11 @@ export const getHotelsAndVisits = async (): Promise<any> => {
       const sectorsMutated = await sectorsPromise;
 
       const hotels = await Hotel.findAll({
+        where: {
+          roomCount: {
+            [Op.not]: 0,
+          },
+        },
         include: [
           {
             model: Visit,
