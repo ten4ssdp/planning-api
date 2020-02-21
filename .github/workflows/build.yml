@@ -23,10 +23,13 @@ jobs:
           chmod 600 ./keys/.ssh/id_rsa
           chmod 644 ./keys/.ssh/id_rsa.pub
           chmod 700 ./keys/.ssh
+      - name: create vault key file
+        run: |
+          echo "${{ secrets.VAULT_PASS }}" > ./keys/.vault_pass.txt
       - name: run ansible playbook
         uses: saubermacherag/ansible-playbook-docker-action@v1.2
         with:
           playbookName: './devops/ansible/deploy.yml'
           keyFile: "./keys/.ssh/id_rsa"
           inventoryFile: "./devops/ansible/inventory/hosts"
-        # run: ansible-playbook ./devops/ansible/deploy.yml -i ./devops/ansible/inventory/hosts --key-file ./keys/.ssh/id_rsa
+          extraVars: "--vault-password-file ./keys/.vault_pass.txt"
