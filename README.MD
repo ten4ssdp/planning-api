@@ -34,6 +34,10 @@ This repo contains the REST API for the SSDP project.
 L'accès à certaines ressources de l'api nécessite de faire des actions récurentes dans l'application (vérification du token, vérification des permission, etc).
 Afin d'éviter le duplicata de morceaux de code, nous stockons ces fonctions dans un middleware qui se chargera d'executer la fonction pour chaque accès à la ressource.
 
+### Algorithme de génération du planning
+
+L'agorithme Mickey est lancé via un appel POST à l'endpoint de Mickey `/api/mickey`. Comme toutes les routes il doit avoir un token pour pouvoir être lancé.  
+Il faut donc récupérer un token depuis un navigateur après s'être connecté à la plateforme et faire un appel POST à [l'endpoint défini dans la documentation](http://15.188.3.249:5000/documentation/#api-Mickey).
 # informations complémentaires
 
 [Cliquer ici pour accéder au Notion du projet](https://www.notion.so/Groupe-10-657ad39759404d0ea9f6217de1690b5e)
