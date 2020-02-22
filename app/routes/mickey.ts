@@ -137,10 +137,8 @@ router.get('/visits/:teamId/:date', async (req, res) => {
   );
   const teams = await getWeeksTeamsFromDate(new Date(req.params.date));
   teams.map(team => {
-    if (
-      getNumberOfWeek(new Date(team.date) || new Date()) ===
-      getNumberOfWeek(new Date()) + 1
-    ) {
+    const requestedDate = team.date ? new Date(team.date) : new Date();
+    if (getNumberOfWeek(requestedDate) === getNumberOfWeek(new Date())) {
       plannedVisits = [...plannedVisits, ...generatesPlanning(visits)];
     }
   });
