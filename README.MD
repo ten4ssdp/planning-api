@@ -38,7 +38,9 @@ Afin d'éviter le duplicata de morceaux de code, nous stockons ces fonctions dan
 
 L'agorithme Mickey est lancé via un appel POST à l'endpoint de Mickey `/api/mickey`. Comme toutes les routes il doit avoir un token pour pouvoir être lancé.  
 Il faut donc récupérer un token depuis un navigateur après s'être connecté à la plateforme et faire un appel POST à [l'endpoint défini dans la documentation](http://15.188.3.249:5000/documentation/#api-Mickey).
-# informations complémentaires
+> ⚠️ Il n'y a pour le moment pas de cron
+
+# Informations complémentaires
 
 [Cliquer ici pour accéder au Notion du projet](https://www.notion.so/Groupe-10-657ad39759404d0ea9f6217de1690b5e)
 
