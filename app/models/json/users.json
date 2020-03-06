@@ -1,5 +1,14 @@
 [
   {
+    "lastname": "Admin",
+    "name": "Admin",
+    "roleId": 1,
+    "sectorId": 1,
+    "email": "webp2020@hetic.net",
+    "password": "HETIC*2020",
+    "address": "11  AVENUE MINERVE, 91170 VIRY CHATILLON"
+  },
+  {
     "lastname": "Salarié 1",
     "name": "Eric",
     "roleId": 2,

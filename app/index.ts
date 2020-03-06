@@ -80,8 +80,12 @@ db.sync()
     usersJSON.map(async user => {
       User.create({
         ...user,
-        email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
-        password: await bcrypt.hash('1234', 10),
+        ...(!user.email && {
+          email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
+        }),
+        password: user.password
+          ? await bcrypt.hash(user.password, 10)
+          : await bcrypt.hash('1234', 10),
       });
     });
 
