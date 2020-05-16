@@ -27,7 +27,7 @@ Visit.init(
       },
     },
     date: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
       validate: {
         notEmpty: true,
