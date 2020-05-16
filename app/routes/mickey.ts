@@ -1,14 +1,13 @@
 import express from 'express';
-import Mickey, {
-  generatesPlanning,
-  getWeeksTeamsFromDate,
-  setUsersToVisits,
-} from '../Mickey';
+import Mickey from '../mickey/index';
 import Visit from '../models/Visit';
 import Hotel from '../models/Hotel';
-import { getNumberOfWeek } from '../utils';
+import { getWeekNumber } from '../utils';
 import Team from '../models/Team';
 import User from '../models/User';
+import { getWeeksTeamsFromDate } from '../mickey/functions/teams';
+import { generatesPlanning } from '../mickey/functions/planning';
+import { setUsersToVisits } from '../mickey/functions/visits';
 
 const router = express.Router();
 /**
@@ -132,16 +131,10 @@ router.get('/visits/:teamId/:date', async (req, res) => {
   visits = visits.filter(
     // get next week's team
     visit =>
-      getNumberOfWeek(new Date(req.params.date)) ===
-      getNumberOfWeek(new Date(visit.date)),
+      getWeekNumber(new Date(req.params.date)) ===
+      getWeekNumber(new Date(visit.date)),
   );
-  const teams = await getWeeksTeamsFromDate(new Date(req.params.date));
-  teams.map(team => {
-    const requestedDate = team.date ? new Date(team.date) : new Date();
-    if (getNumberOfWeek(requestedDate) === getNumberOfWeek(new Date()) + 1) {
-      plannedVisits = [...plannedVisits, ...generatesPlanning(visits)];
-    }
-  });
+  plannedVisits = [...plannedVisits, ...generatesPlanning(visits)];
   res.send(plannedVisits);
 });
 
