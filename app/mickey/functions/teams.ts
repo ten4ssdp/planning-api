@@ -6,7 +6,7 @@ import TeamComposition from '../../models/TeamComposition';
 
 import { Sequelize } from 'sequelize';
 import { USERS_BY_TEAM } from '../constants';
-import { getWeekNumber, getNextMonday } from '../../utils';
+import { getWeekNumber } from '../../utils';
 
 export const getUsersBySector = async (): Promise<any> => {
   return await Sector.findAll({
@@ -43,8 +43,8 @@ export const getUsersBySector = async (): Promise<any> => {
     }, {});
 };
 
-export const createTeamsBySector = (sectors, weekNumber) => {
-  Object.keys(sectors).map(async key => {
+export const createTeamsBySector = (sectors, nextMonday): Array<any> => {
+  return Object.keys(sectors).map(async key => {
     const users = [...sectors[key]];
     const teamsCount = (users.length - (users.length % 2)) / 2;
 
@@ -52,7 +52,8 @@ export const createTeamsBySector = (sectors, weekNumber) => {
       const teamName = `team${i + 1} ${key}`;
       const binome = users.splice(0, USERS_BY_TEAM);
       const sectorId = binome[0].sectorId;
-      const date: Date = getNextMonday();
+      const date: Date = nextMonday;
+      const weekNumber = getWeekNumber(nextMonday);
       const team = await Team.create({
         name: teamName,
         date,

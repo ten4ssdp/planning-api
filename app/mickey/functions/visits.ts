@@ -110,7 +110,7 @@ export const getVisits = async (hotels, teams) => {
  * Create visits into DB
  * @param visits visits grouped by sectors and teams
  */
-export const createVisits = async visits => {
+export const createVisits = async (visits, date: Date) => {
   const createVisit = async (hotel, teamId, date): Promise<any> => {
     try {
       await Visit.create({
@@ -123,10 +123,6 @@ export const createVisits = async visits => {
     }
   };
   const sectorsNames = Object.keys(visits);
-  const today: Date = new Date();
-  const date = new Date(
-    today.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7)),
-  );
   sectorsNames.map(sectorName => {
     const teams = Object.keys(visits[sectorName]);
     teams.map(teamId => {

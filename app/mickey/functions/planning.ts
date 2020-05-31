@@ -1,11 +1,9 @@
 import { VISITS_BY_DAY } from '../constants';
 import moment from 'moment';
 import Visit from '../../models/Visit';
-import { getNextMonday } from '../../utils';
 
-export const generatesPlanning = (visits: Visit[]) => {
-  const nextMonday: Date = getNextMonday();
-  let currentDay: Date = nextMonday;
+export const generatesPlanning = (visits: Visit[], firstDay: Date) => {
+  let currentDay: Date = firstDay;
   let plannedVisits: any = [];
   while (visits.length > 0) {
     const dayVisits = visits.splice(0, VISITS_BY_DAY);

@@ -10,19 +10,18 @@ import {
   createVisits,
   wipeVisits,
 } from './functions/visits';
-import { getWeekNumber, getNextMonday } from '../utils';
+import { getNextMonday } from '../utils';
 
 async function init(nextMonday = getNextMonday()): Promise<any> {
   await wipeVisits(nextMonday);
   await wipeTeams(nextMonday);
   const sectors = await getUsersBySector();
-  const weekNumber = getWeekNumber(nextMonday);
-  createTeamsBySector(sectors, weekNumber);
+  createTeamsBySector(sectors, nextMonday);
 
   const hotels = await getHotelsAndVisits();
   const teams = await getTeamsGroupedBySector();
   const visits = await getVisits(hotels, teams);
-  createVisits(visits);
+  createVisits(visits, new Date(nextMonday));
 
   return { sectors };
 }
