@@ -17,8 +17,12 @@ const router = express.Router();
  *
  * @apiSuccess {String} mickey result
  */
-router.post('/', (req, res) => {
-  Mickey.init();
+router.post('/:date', (req, res) => {
+  if (!req.params.date) {
+    Mickey.init();
+  } else {
+    Mickey.init(new Date(req.params.date));
+  }
   res.send({ mickey: 'ok' });
 });
 
@@ -113,6 +117,7 @@ router.get('/visits', async (req, res) => {
 router.get('/visits/:teamId/:date', async (req, res) => {
   if (!req.params.date) throw new Error('No date');
   if (!req.params.teamId) throw new Error('No teamId');
+  const date = new Date(req.params.date);
   let plannedVisits: any = [];
   let visits = await Visit.findAll({
     where: {
@@ -134,7 +139,7 @@ router.get('/visits/:teamId/:date', async (req, res) => {
       getWeekNumber(new Date(req.params.date)) ===
       getWeekNumber(new Date(visit.date)),
   );
-  plannedVisits = [...plannedVisits, ...generatesPlanning(visits)];
+  plannedVisits = [...plannedVisits, ...generatesPlanning(visits, date)];
   res.send(plannedVisits);
 });
 
