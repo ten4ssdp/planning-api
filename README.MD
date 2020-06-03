@@ -26,7 +26,7 @@ This repo contains the REST API for the SSDP project.
  L'authentification se fait sur deux niveaux : visiteur et organisateur (ou admin). 
  Chaque niveau d'authentification restreint l'utilisateur à certaines parties de l'api afin qu'il puisse utiliser les fontionnalités du rôle qui lui est attribué.
 
- Losrqu'il est authentifié, un utilisateur se voit attribuet un token (JWT) qui contient ses informations personnelles.
+ Losrqu'il est authentifié, un utilisateur se voit attribuer un token (JWT) qui contient ses informations personnelles.
  Cette clé est sauvegardée côté client durant toute la session de l'utilisateur et est utilisée pour les appels API.
  Lorsque le serveur reçoit une requette, il vérifie les informations du token et donne l'accès ou non à la ressource demandée en fonction du rôle qui se trouve dans le token.
 

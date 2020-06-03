@@ -2,6 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import db from '../connexion';
 import Team from './Team';
 import Hotel from './Hotel';
+import { getUsersFromTeam } from 'app/mickey/functions/teams';
 
 class Visit extends Model {
   public id!: number;
@@ -9,6 +10,8 @@ class Visit extends Model {
   public date!: string;
   public status!: number;
   public hotelId!: number;
+  public isUrgent!: boolean;
+  public description!: boolean;
 }
 
 Visit.init(
@@ -40,6 +43,17 @@ Visit.init(
       validate: {
         notEmpty: true,
       },
+    },
+    isUrgent: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
   },
   {

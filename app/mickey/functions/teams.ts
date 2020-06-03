@@ -123,3 +123,15 @@ export const wipeTeams = async (date): Promise<any> => {
     },
   });
 };
+
+export const getUsersFromTeam = async teamId => {
+  const teams = await TeamComposition.findAll({
+    where: {
+      teamId,
+    },
+    include: [User],
+    raw: true,
+    nest: true,
+  });
+  return teams;
+};

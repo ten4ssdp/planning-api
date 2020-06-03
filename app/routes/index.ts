@@ -5,6 +5,7 @@ import ErrorHandler from '../helpers/error';
 import Role from '../models/Role';
 import Sector from '../models/Sector';
 import bcrypt from 'bcrypt';
+import { io } from '../index';
 
 const router = express.Router({ mergeParams: true });
 
@@ -33,6 +34,7 @@ router.post(
 
     const token = jwt.sign(
       {
+        id: userFound.id,
         name: userFound.name,
         lastname: userFound.lastname,
         role: {
