@@ -1,9 +1,11 @@
 import express from 'express';
+import User from '../models/User';
+import Team from '../models/Team';
 
 const router = express.Router();
 
 /**
- * @api {get} /teams/:userId/:weekNumber Get team by user id and week number
+ * @api {get} /teams/:userId Get team by user id
  * @apiName GetTeamByUserIdAndWeekNumber
  * @apiGroup Team
  *
@@ -11,10 +13,27 @@ const router = express.Router();
  * @apiParam {Number} weekNumber Sector unique ID.
  *
  */
-router.get('/teams/:userId(\\d+)/:weekNumber(\\d+)', (req, res) => {
+router.get('/teams/:userId(\\d+)', async (req, res) => {
   const {
-    params: { userId, weekNumber },
+    params: { userId },
   } = req;
-  if (!userId || !weekNumber)
-    throw new Error('please provide an id and a weeknumber');
+  if (!userId) throw new Error('please provide an id');
+
+  try {
+    const teams = await Team.findAll({
+      include: [
+        {
+          model: User,
+          attributes: [],
+          where: { id: userId },
+        },
+      ],
+    });
+    if (!teams) throw new Error(`ID ${userId} does not exists`);
+    res.send(teams);
+  } catch (error) {
+    res.status(404).send({ error: error.message });
+  }
 });
+
+export default router;

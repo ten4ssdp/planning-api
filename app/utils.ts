@@ -1,4 +1,5 @@
 import moment from 'moment';
+import jwt from 'jsonwebtoken';
 
 export const pipe = (...fns) => (x): any => fns.reduce((v, f) => f(v), x);
 
@@ -13,3 +14,17 @@ export const getNextMonday = (): Date =>
   moment()
     .day(8)
     .toDate();
+
+export const sendNotification = (socket, data) => {
+  socket.emit('notification', data);
+};
+
+export const getUserIdFromToken = token => {
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWTSECRET);
+    const { id } = decodedToken;
+    return id;
+  } catch (err) {
+    return err;
+  }
+};
