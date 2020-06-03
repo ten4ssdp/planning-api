@@ -1,11 +1,9 @@
 import express from 'express';
 import Visit from '../models/Visit';
 import Hotel from '../models/Hotel';
-import { getWeekNumber } from '../utils';
+import { getWeekNumber, sendEmergencyVisit } from '../utils';
 import { generatesPlanning } from '../mickey/functions/planning';
 import { Op } from 'sequelize';
-import { getUsersFromTeam } from '../mickey/functions/teams';
-import { io, connectedUser } from '../index';
 
 const router = express.Router();
 
@@ -141,24 +139,12 @@ router.post('/visit', async (req, res) => {
         raw: true,
       },
     );
-    const visit = createdVisit.dataValues;
-    console.log(visit);
-    if (visit.isUrgent === true) {
-      const teamsUsers = await getUsersFromTeam(visit.teamId);
-      const usersId: Array<number | string> = teamsUsers.map(
-        tc => tc?.user?.id,
-      );
-      // console.log({ usersId });
-      // console.log({ connectedUser });
-
-      usersId.forEach(id => {
-        if (connectedUser.hasOwnProperty(id)) {
-          connectedUser[id].forEach(socketId => {
-            io.to(socketId).emit('emergency', visit);
-          });
-        }
-      });
-    }
+    const visit = await Visit.findByPk(createdVisit.dataValues.id, {
+      raw: true,
+      nest: true,
+      include: [Hotel],
+    });
+    sendEmergencyVisit(visit);
     res.send(visit);
   } catch (error) {
     res.status(400).send({ error: error.message });
@@ -197,6 +183,13 @@ router.put('/:id(\\d+)', async (req, res) => {
       returning: true,
       validate: true,
     });
+
+    const visit = await Visit.findByPk(req.params.id, {
+      raw: true,
+      nest: true,
+      include: [Hotel],
+    });
+    sendEmergencyVisit(visit);
 
     const [rowsUpdate, [updatedVisit]] = result;
 
