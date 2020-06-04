@@ -16,12 +16,10 @@ const router = express.Router();
  *
  * @apiSuccess {String} mickey result
  */
-router.post('/:date', (req, res) => {
+router.post('/', (req, res) => {
   try {
-    if (!req.params.date) {
-      Mickey.init();
-      res.send({ mickey: 'ok' });
-    }
+    Mickey.init();
+    res.send({ mickey: 'ok' });
   } catch (err) {
     res.status(400).send({ error: err.message });
   }
@@ -41,6 +39,8 @@ router.post('/:date', (req, res) => {
     if (req.params.date) {
       Mickey.init(new Date(req.params.date));
       res.send({ mickey: 'ok' });
+    } else {
+      res.send({ mickey: 'undefined date' });
     }
   } catch (err) {
     res.status(400).send({ error: err.message });
