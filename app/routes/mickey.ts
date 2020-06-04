@@ -38,7 +38,7 @@ router.post('/:date', (req, res) => {
  */
 router.post('/:date', (req, res) => {
   try {
-    if (!req.params.date) {
+    if (req.params.date) {
       Mickey.init(new Date(req.params.date));
       res.send({ mickey: 'ok' });
     }
