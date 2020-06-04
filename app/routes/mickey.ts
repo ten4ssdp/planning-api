@@ -8,20 +8,43 @@ import { getWeeksTeamsFromDate } from '../mickey/functions/teams';
 import { setUsersToVisits } from '../mickey/functions/visits';
 
 const router = express.Router();
+
 /**
- * @api {post} /mickey
- * @apiName Launch Mickey
+ * @api {post} /mickey/
+ * @apiName Launch Mickey for next week
  * @apiGroup Mickey
  *
  * @apiSuccess {String} mickey result
  */
 router.post('/:date', (req, res) => {
-  if (!req.params.date) {
-    Mickey.init();
-  } else {
-    Mickey.init(new Date(req.params.date));
+  try {
+    if (!req.params.date) {
+      Mickey.init();
+      res.send({ mickey: 'ok' });
+    }
+  } catch (err) {
+    res.status(400).send({ error: err.message });
   }
-  res.send({ mickey: 'ok' });
+});
+
+/**
+ * @api {post} /mickey/:date
+ * @apiName Launch Mickey for a specified week
+ * @apiGroup Mickey
+ *
+ * @apiParam {String} date the mon day of the week to generate (MM-DD-YYYY).
+ *
+ * @apiSuccess {String} mickey result
+ */
+router.post('/:date', (req, res) => {
+  try {
+    if (!req.params.date) {
+      Mickey.init(new Date(req.params.date));
+      res.send({ mickey: 'ok' });
+    }
+  } catch (err) {
+    res.status(400).send({ error: err.message });
+  }
 });
 
 /**
