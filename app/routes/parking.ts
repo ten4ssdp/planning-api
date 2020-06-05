@@ -27,7 +27,7 @@ const router = express.Router();
  */
 router.get('/parkings', async (req, res) => {
   try {
-    const findOptions: FindOptions = {
+    const findOptions: FindOptions | any = {
       include: [
         {
           model: Vehicle,

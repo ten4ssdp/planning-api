@@ -29,7 +29,7 @@ const router = express.Router();
  */
 router.get('/sectors', async (req, res) => {
   try {
-    const findOptions: FindOptions = {
+    const findOptions: FindOptions | any = {
       include: [
         {
           model: Team,

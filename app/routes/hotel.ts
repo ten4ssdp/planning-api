@@ -31,7 +31,7 @@ const router = express.Router();
  */
 router.get('/hotels', async (req, res) => {
   try {
-    const findOptions: FindOptions = {
+    const findOptions: FindOptions | any = {
       include: [
         {
           model: Visit,
