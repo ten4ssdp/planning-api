@@ -1,6 +1,7 @@
 import express from 'express';
 import Parking from '../models/Parking';
 import Vehicle from '../models/Vehicle';
+import { FindOptions } from 'sequelize/types';
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ const router = express.Router();
  */
 router.get('/parkings', async (req, res) => {
   try {
-    const parkings = await Parking.findAll({
+    const findOptions: FindOptions = {
       include: [
         {
           model: Vehicle,
@@ -34,7 +35,8 @@ router.get('/parkings', async (req, res) => {
       ],
       ...(req.query.limit && { limit: req.query.limit }),
       order: [['address', 'ASC']],
-    });
+    };
+    const parkings = await Parking.findAll(findOptions);
     res.send(parkings);
   } catch (error) {
     res.status(404).send({ error });
