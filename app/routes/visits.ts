@@ -3,7 +3,9 @@ import Visit from '../models/Visit';
 import Hotel from '../models/Hotel';
 import { getWeekNumber, sendEmergencyVisit } from '../utils';
 import { generatesPlanning } from '../mickey/functions/planning';
-import { Op } from 'sequelize';
+import { Op, FindOptions } from 'sequelize';
+import Team from '../models/Team';
+import User from '../models/User';
 
 const router = express.Router();
 
@@ -27,6 +29,85 @@ router.get('/visits', async (req, res) => {
   try {
     const visits = await Visit.findAll();
     res.send(visits);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+});
+
+/**
+ * @api {get} /visits/user/:userId/:date Request visits of a user from date
+ * @apiName GetVisitsByUserIdAndDate
+ * @apiGroup Visit
+ *
+ * @apiParam {Number} userId User unique id.
+ * @apiParam {Number} date Date of the week
+ *
+ * @apiSuccess {Object[]}  - List of visits
+ * @apiSuccess {Number}    -.id ID of the visit.
+ * @apiSuccess {Number}    -.rate Visit rate.
+ * @apiSuccess {String}    -.status Status of the visit.
+ * @apiSuccess {Boolean}   -.isUrgent Urgence of visit.
+ * @apiSuccess {Number}    -.teamId ID of the linked team row.
+ * @apiSuccess {Number}    -.hotel ID of the linked hotel row.
+ * @apiSuccess {String}    -.createdAt Row creation date.
+ * @apiSuccess {String}    -.updatedAt Row update date.
+ *
+ */
+router.get('/visits/user/:userId/:date', async (req, res) => {
+  try {
+    let team;
+    let formattedDate;
+    let plannedVisits: any = [];
+    if (req.params.userId && req.params.date) {
+      const { userId, date } = req.params;
+      formattedDate = new Date(date);
+      team = await Team.findOne({
+        where: { date },
+        include: [
+          {
+            model: User,
+            attributes: [],
+            where: { id: userId },
+          },
+        ],
+      });
+    }
+    const findOptions: FindOptions | any = {
+      where: {
+        status: 0,
+        teamId: team.id,
+        isUrgent: {
+          [Op.not]: true,
+        },
+      },
+      include: [
+        {
+          model: Hotel,
+        },
+      ],
+      raw: true,
+      nest: true,
+    };
+    const visits = await Visit.findAll(findOptions);
+
+    const emergencies = await Visit.findAll({
+      where: {
+        teamId: team.id,
+        isUrgent: true,
+      },
+      include: [
+        {
+          model: Hotel,
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+    plannedVisits = [
+      ...plannedVisits,
+      ...generatesPlanning(visits, formattedDate),
+    ];
+    res.send({ visits: plannedVisits, emergencies });
   } catch (error) {
     res.status(400).send({ error: error.message });
   }
