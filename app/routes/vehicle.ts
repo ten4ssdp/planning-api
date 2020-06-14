@@ -42,7 +42,7 @@ router.get('/vehicles', async (req, res) => {
       ...(req.query.limit && { limit: req.query.limit }),
       order: [['numberPlate', 'ASC']],
     };
-    const vehicles = await Vehicle.findAll();
+    const vehicles = await Vehicle.findAll(findOptions);
     res.send(vehicles);
   } catch (error) {
     res.status(404).send({ error });
