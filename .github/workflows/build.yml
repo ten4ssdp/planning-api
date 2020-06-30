@@ -1,4 +1,4 @@
-on: 
+on:
   push:
     branches:
       - master
@@ -7,29 +7,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: build image
-        run: docker build -t ssdpapi .
-      - name: tag image
-        run: docker tag ssdpapi registry.kevinmanssat.fr/ssdpapi
-      - name: push image
-        run: docker push registry.kevinmanssat.fr/ssdpapi
+      - uses: actions/setup-python@v2
+      - name: Install boto & ansible
+        run: pip install boto boto3 ansible
       - name: clone devops repo
         run: git clone https://github.com/ten4ssdp/devops.git
       - name: create ssh folder
         run: |
           mkdir -p ./keys/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./keys/.ssh/id_rsa
-          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ./keys/.ssh/id_rsa.pub
           chmod 600 ./keys/.ssh/id_rsa
-          chmod 644 ./keys/.ssh/id_rsa.pub
-          chmod 700 ./keys/.ssh
       - name: create vault key file
-        run: |
-          echo "${{ secrets.VAULT_PASS }}" > ./keys/.vault_pass.txt
+        run: echo "${{ secrets.VAULT_PASS }}" > ./keys/.vault_pass.txt
       - name: run ansible playbook
-        uses: saubermacherag/ansible-playbook-docker-action@v1.2
-        with:
-          playbookName: './devops/ansible/deploy.yml'
-          keyFile: "./keys/.ssh/id_rsa"
-          inventoryFile: "./devops/ansible/inventory/hosts"
-          extraVars: "--vault-password-file ./keys/.vault_pass.txt"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ANSIBLE_CFG: ./devops/ansible/ansible.cfg
+          ANSIBLE_HOST_KEY_CHECKING: False
+        run: ansible-playbook devops/ansible/deploy.yml -i devops/ansible/inventory/ec2.py --vault-password-file ./keys/.vault_pass.txt --key-file ./keys/.ssh/id_rsa --extra-vars "app=back"
