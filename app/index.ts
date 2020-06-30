@@ -32,6 +32,7 @@ import bcrypt from 'bcrypt';
 import path from 'path';
 import socketIO from 'socket.io';
 import { getUserIdFromToken } from './utils';
+import nodemailer from 'nodemailer';
 
 const app = express();
 const server = require('http').createServer(app);
@@ -159,3 +160,11 @@ io.on('connection', socket => {
 });
 
 server.listen(PORT, () => console.log('APP RUNNING'));
+
+export const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_ADDRESS,
+    pass: process.env.GMAIL_PASSWORD,
+  },
+});

@@ -1,7 +1,8 @@
 import moment from 'moment';
 import jwt from 'jsonwebtoken';
 import { getUsersFromTeam } from './mickey/functions/teams';
-import { connectedUser, io } from './index';
+import { connectedUser, io, transporter } from './index';
+import Visit from './models/Visit';
 
 export const pipe = (...fns) => (x): any => fns.reduce((v, f) => f(v), x);
 
@@ -41,6 +42,23 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
           io.to(socketId).emit('emergency', visit);
         });
       }
+    });
+  }
+};
+
+export const sendVisitCancellationMail = (visit: Visit | any): void => {
+  if (visit.status === -1) {
+    console.log({ visit });
+    const mailOptions = {
+      from: 'ten4ssdp@gmail.com',
+      to: 'ten4ssdp@gmail.com',
+      subject: `Annulation de la visite de l'hotel ${visit.hotel.name}`,
+      html: /* html */ `
+        <p>Le binôme <strong>${visit.team.name}</strong> à annulé la visite du ${visit.date} à l'hôtel ${visit.hotel.name}.<br/>Retrouvez cette annulation sur le <strong>backoffice</strong> dans le planning du binôme.</p>
+      `,
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      error ? console.log(error) : console.log(`email sent: ${info.response}`);
     });
   }
 };

@@ -1,7 +1,11 @@
 import express from 'express';
 import Visit from '../models/Visit';
 import Hotel from '../models/Hotel';
-import { getWeekNumber, sendEmergencyVisit } from '../utils';
+import {
+  getWeekNumber,
+  sendEmergencyVisit,
+  sendVisitCancellationMail,
+} from '../utils';
 import { generatesPlanning } from '../mickey/functions/planning';
 import { Op, FindOptions } from 'sequelize';
 import Team from '../models/Team';
@@ -256,7 +260,7 @@ router.post('/visit', async (req, res) => {
  * @apiSuccess {String} updatedAt Row update date.
  *
  */
-router.put('/:id(\\d+)', async (req, res) => {
+router.put('/visit/:id(\\d+)', async (req, res) => {
   const { body } = req;
   try {
     const result = await Visit.update(body, {
@@ -264,13 +268,16 @@ router.put('/:id(\\d+)', async (req, res) => {
       returning: true,
       validate: true,
     });
-
     const visit = await Visit.findByPk(req.params.id, {
       raw: true,
       nest: true,
-      include: [Hotel],
+      include: [Hotel, Team],
     });
-    sendEmergencyVisit(visit);
+
+    if (visit) {
+      sendEmergencyVisit(visit);
+      sendVisitCancellationMail(visit);
+    }
 
     const [rowsUpdate, [updatedVisit]] = result;
 
@@ -293,7 +300,7 @@ router.put('/:id(\\d+)', async (req, res) => {
  *
  * @apiParam {Number} count  number of deleted rows
  */
-router.delete('/:id(\\d+)', async (req, res) => {
+router.delete('/visit/:id(\\d+)', async (req, res) => {
   try {
     const visit = await Visit.destroy({
       where: {
