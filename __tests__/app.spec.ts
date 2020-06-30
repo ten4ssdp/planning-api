@@ -1,0 +1,22 @@
+const request = require('supertest');
+const app = require('../app/index');
+
+let user_email = 'eric.salarie-1@ssdp.net';
+let user_password = '1234'; 
+
+
+describe("POST /login", () => {
+    expect(1+1).toEqual(2);
+    // it("responds with 204 status", async () => {
+    //     request(app)
+    //         .get('/login')
+    //         .send({email: user_email, password: user_password})
+    //         .expect(200)
+    // });
+    // it("responds with 400 status", async () => {
+    //     request(app)
+    //         .get('/login')
+    //         .send({email: null, password: null})
+    //         .expect(400)
+    // })
+});
