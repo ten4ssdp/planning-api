@@ -5,6 +5,7 @@ import ErrorHandler from '../helpers/error';
 import Role from '../models/Role';
 import Sector from '../models/Sector';
 import bcrypt from 'bcrypt';
+import generateToken from '../helpers/generateToken';
 
 const router = express.Router({ mergeParams: true });
 
@@ -31,22 +32,19 @@ router.post(
       res.status(400).json({ error: 'Email ou Mot de passe invalide.' });
     }
 
-    const token = jwt.sign(
-      {
-        name: userFound.name,
-        lastname: userFound.lastname,
-        role: {
-          id: userFound['role.id'],
-          name: userFound['role.name'],
-          level: userFound['role.level'],
-        },
-        sector: {
-          id: userFound['sector.id'],
-          name: userFound['sector.name'],
-        },
+    const token = generateToken({
+      name: userFound.name,
+      lastname: userFound.lastname,
+      role: {
+        id: userFound['role.id'],
+        name: userFound['role.name'],
+        level: userFound['role.level'],
       },
-      process.env.JWTSECRET,
-    );
+      sector: {
+        id: userFound['sector.id'],
+        name: userFound['sector.name'],
+      },
+    });
 
     res.status(200).json({ token });
   },
