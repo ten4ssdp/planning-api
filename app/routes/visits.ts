@@ -78,7 +78,7 @@ router.get('/visits/user/:userId/:date', async (req, res) => {
     }
     const findOptions: FindOptions | any = {
       where: {
-        status: 0,
+        [Op.or]: [{ status: 0 }, { status: -1 }],
         teamId: team.id,
         isUrgent: {
           [Op.not]: true,
@@ -151,7 +151,8 @@ router.get('/visits/:teamId/:date', async (req, res) => {
   let plannedVisits: any = [];
   let visits = await Visit.findAll({
     where: {
-      status: 0,
+      // status: 0,
+      [Op.or]: [{ status: 0 }, { status: -1 }],
       teamId: req.params.teamId,
       isUrgent: {
         [Op.not]: true,

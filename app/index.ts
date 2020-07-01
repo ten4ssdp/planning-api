@@ -142,7 +142,6 @@ io.on('connection', socket => {
   socket.on('join', function(token) {
     const userId = getUserIdFromToken(token);
     connectedUser[userId] = [...(connectedUser[userId] || []), socket.id];
-    console.log({ connectedUser });
     io.emit('messages', JSON.stringify(connectedUser));
   });
 

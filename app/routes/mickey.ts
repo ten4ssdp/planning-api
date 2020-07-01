@@ -16,9 +16,9 @@ const router = express.Router();
  *
  * @apiSuccess {String} mickey result
  */
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    Mickey.init();
+    await Mickey.init();
     res.send({ mickey: 'ok' });
   } catch (err) {
     res.status(400).send({ error: err.message });
@@ -34,10 +34,10 @@ router.post('/', (req, res) => {
  *
  * @apiSuccess {String} mickey result
  */
-router.post('/:date', (req, res) => {
+router.post('/:date', async (req, res) => {
   try {
     if (req.params.date) {
-      Mickey.init(new Date(req.params.date));
+      await Mickey.init(new Date(req.params.date));
       res.send({ mickey: 'ok' });
     } else {
       res.send({ mickey: 'undefined date' });
