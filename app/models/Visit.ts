@@ -12,6 +12,8 @@ class Visit extends Model {
   public hotelId!: number;
   public isUrgent!: boolean;
   public description!: boolean;
+  public start!: Date;
+  public end!: Date;
 }
 
 Visit.init(
@@ -53,6 +55,14 @@ Visit.init(
     },
     description: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    start: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    end: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
   },
