@@ -4,9 +4,12 @@ const app = require('../app/index');
 let user_email = 'eric.salarie-1@ssdp.net';
 let user_password = '1234'; 
 
+function sum(a,b){
+    return a+b
+}
 
-describe("POST /login", () => {
-    expect(1+1).toEqual(2);
+test("POST /login", () => {
+    expect(sum(1,1)).toEqual(2);
     // it("responds with 204 status", async () => {
     //     request(app)
     //         .get('/login')
