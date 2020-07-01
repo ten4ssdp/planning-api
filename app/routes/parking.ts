@@ -32,7 +32,7 @@ router.get('/parkings', async (req, res) => {
           model: Vehicle,
         },
       ],
-      ...(req.query.limit && { limit: req.query.limit }),
+      ...(req.query.limit && { limit: Number(req.query.limit)}),
       order: [['address', 'ASC']],
     });
     res.send(parkings);
