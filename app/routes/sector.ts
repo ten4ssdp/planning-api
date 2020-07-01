@@ -41,7 +41,7 @@ router.get('/sectors', async (req, res) => {
           model: User,
         },
       ],
-      ...(req.query.limit && { limit: req.query.limit }),
+      ...(req.query.limit && { limit: Number(req.query.limit) }),
     };
     const sectors = await Sector.findAll(findOptions);
     res.send(sectors);
