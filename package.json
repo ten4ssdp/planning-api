@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "node ./app/index.ts",
     "tsc": "tsc",
-    "test": "jest",
+    "test": "jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1",
     "prod": "tsc && node ./dist/index.js",
     "apidoc": "apidoc -i ./app -o apidoc/ -f '.*\\.ts$'"
   },
