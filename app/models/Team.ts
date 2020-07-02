@@ -24,9 +24,16 @@ Team.init(
       },
     },
     date: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
       defaultValue: DataTypes.NOW,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    weekNumber: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
       validate: {
         notEmpty: true,
       },

@@ -2,6 +2,7 @@ import express from 'express';
 import Hotel from '../models/Hotel';
 import Visit from '../models/Visit';
 import Sector from '../models/Sector';
+import { FindOptions } from 'sequelize/types';
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ const router = express.Router();
  */
 router.get('/hotels', async (req, res) => {
   try {
-    const hotels = await Hotel.findAll({
+    const findOptions: FindOptions | any = {
       include: [
         {
           model: Visit,
@@ -44,7 +45,8 @@ router.get('/hotels', async (req, res) => {
         ['name', 'ASC'],
         [Visit, 'date', 'ASC NULLS FIRST'],
       ],
-    });
+    };
+    const hotels = await Hotel.findAll(findOptions);
     res.send(hotels);
   } catch (error) {
     res.status(404).send({ error });

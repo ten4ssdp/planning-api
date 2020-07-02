@@ -72,4 +72,10 @@ Sector.hasMany(User);
 User.belongsToMany(Team, { through: TeamComposition });
 Team.belongsToMany(User, { through: TeamComposition });
 
+User.hasMany(TeamComposition);
+TeamComposition.belongsTo(User);
+
+Team.hasMany(TeamComposition);
+TeamComposition.belongsTo(Team);
+
 export default User;

@@ -1,11 +1,12 @@
+import bcrypt from 'bcrypt';
 import express from 'express';
-import jwt from 'jsonwebtoken';
-import User from '../models/User';
-import ErrorHandler from '../helpers/error';
+import generateToken from '../helpers/generateToken';
 import Role from '../models/Role';
 import Sector from '../models/Sector';
 import bcrypt from 'bcrypt';
 import generateToken from '../helpers/generateToken';
+import User from '../models/User';
+
 
 const router = express.Router({ mergeParams: true });
 

@@ -3,6 +3,7 @@ import Sector from '../models/Sector';
 import Team from '../models/Team';
 import Hotel from '../models/Hotel';
 import User from '../models/User';
+import { FindOptions } from 'sequelize/types';
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ const router = express.Router();
  */
 router.get('/sectors', async (req, res) => {
   try {
-    const sectors = await Sector.findAll({
+    const findOptions: FindOptions | any = {
       include: [
         {
           model: Team,
@@ -41,7 +42,8 @@ router.get('/sectors', async (req, res) => {
         },
       ],
       ...(req.query.limit && { limit: Number(req.query.limit) }),
-    });
+    };
+    const sectors = await Sector.findAll(findOptions);
     res.send(sectors);
   } catch (error) {
     res.status(404).send({ error });

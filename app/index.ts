@@ -25,11 +25,17 @@ import mickeyRoutes from './routes/mickey';
 import parkingRoutes from './routes/parking';
 import sectorRoutes from './routes/sector';
 import userRoutes from './routes/user';
+import teamsRoutes from './routes/teams';
+import visitsRoutes from './routes/visits';
 import vehicleRoutes from './routes/vehicle';
 import bcrypt from 'bcrypt';
 import path from 'path';
+import socketIO from 'socket.io';
+import { getUserIdFromToken } from './utils';
+import nodemailer from 'nodemailer';
 
 const app = express();
+const server = require('http').createServer(app);
 const PORT = process.env.PORT || '5000';
 
 app.use(cors());
@@ -47,6 +53,8 @@ app.use('/api', verify, vehicleRoutes);
 app.use('/api', verify, hotelRoutes);
 app.use('/api', verify, sectorRoutes);
 app.use('/api', verify, parkingRoutes);
+app.use('/api', verify, teamsRoutes);
+app.use('/api', verify, visitsRoutes);
 app.use('/api/mickey', verify, mickeyRoutes);
 
 db.authenticate()
@@ -80,8 +88,12 @@ db.sync()
     usersJSON.map(async user => {
       User.create({
         ...user,
-        email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
-        password: await bcrypt.hash('1234', 10),
+        ...(!user.email && {
+          email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
+        }),
+        password: user.password
+          ? await bcrypt.hash(user.password, 10)
+          : await bcrypt.hash('1234', 10),
       });
     });
 
@@ -122,6 +134,42 @@ db.sync()
 //   handleError(err, req);
 // });
 
+
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));
 
+export const io = socketIO(server);
+
+export const connectedUser = {};
+
+io.on('connection', socket => {
+  socket.on('join', function(token) {
+    const userId = getUserIdFromToken(token);
+    connectedUser[userId] = [...(connectedUser[userId] || []), socket.id];
+    io.emit('messages', JSON.stringify(connectedUser));
+  });
+
+  // https://socket.io/docs/rooms-and-namespaces/
+
+  socket.on('disconnect', function() {
+    console.log('leave' + socket.id);
+    Object.keys(connectedUser).map(key => {
+      if (connectedUser[key].includes(socket.id)) {
+        connectedUser[key] = connectedUser[key].filter(id => id !== socket.id);
+      }
+    });
+    io.emit('messages', JSON.stringify(connectedUser));
+  });
+});
+
+server.listen(PORT, () => console.log('APP RUNNING'));
+
+export const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_ADDRESS,
+    pass: process.env.GMAIL_PASSWORD,
+  },
+});
+
 export default app;
+

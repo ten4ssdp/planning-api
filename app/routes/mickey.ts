@@ -1,26 +1,50 @@
 import express from 'express';
-import Mickey, {
-  generatesPlanning,
-  getWeeksTeamsFromDate,
-  setUsersToVisits,
-} from '../Mickey';
+import Mickey from '../mickey/index';
 import Visit from '../models/Visit';
 import Hotel from '../models/Hotel';
-import { getNumberOfWeek } from '../utils';
 import Team from '../models/Team';
 import User from '../models/User';
+import { getWeeksTeamsFromDate } from '../mickey/functions/teams';
+import { setUsersToVisits } from '../mickey/functions/visits';
 
 const router = express.Router();
+
 /**
- * @api {post} /mickey
- * @apiName Launch Mickey
+ * @api {post} /mickey/
+ * @apiName Launch Mickey for next week
  * @apiGroup Mickey
  *
  * @apiSuccess {String} mickey result
  */
-router.post('/', (req, res) => {
-  Mickey.init();
-  res.send({ mickey: 'ok' });
+router.post('/', async (req, res) => {
+  try {
+    await Mickey.init();
+    res.send({ mickey: 'ok' });
+  } catch (err) {
+    res.status(400).send({ error: err.message });
+  }
+});
+
+/**
+ * @api {post} /mickey/:date
+ * @apiName Launch Mickey for a specified week
+ * @apiGroup Mickey
+ *
+ * @apiParam {String} date the mon day of the week to generate (MM-DD-YYYY).
+ *
+ * @apiSuccess {String} mickey result
+ */
+router.post('/:date', async (req, res) => {
+  try {
+    if (req.params.date) {
+      await Mickey.init(new Date(req.params.date));
+      res.send({ mickey: 'ok' });
+    } else {
+      res.send({ mickey: 'undefined date' });
+    }
+  } catch (err) {
+    res.status(400).send({ error: err.message });
+  }
 });
 
 /**
@@ -66,7 +90,7 @@ router.get('/visits', async (req, res) => {
 
   visits = visits.map(async visit => {
     const users = await User.findAll({
-      attributes: ['name', 'lastname'],
+      attributes: ['id', 'name', 'lastname'],
       include: [
         {
           model: Team,
@@ -83,66 +107,6 @@ router.get('/visits', async (req, res) => {
   });
 
   res.send(visits);
-});
-/**
- * @api {get} /mickey/visits/:teamId/:date Get visits by team
- * @apiName GetVisitsByTeam
- * @apiGroup Mickey
- *
- * @apiParam {Number} teamId Team unique id.
- * @apiParam {Number} date Date of the week
- *
- * @apiSuccess {Number} id ID of the visit.
- * @apiSuccess {Number} rate Rate of the visit.
- * @apiSuccess {Number} status Status of the visit.
- * @apiSuccess {String} createdAt Row creation date.
- * @apiSuccess {String} updatedAt Row update date.
- * @apiSuccess {Number} teamId Visit's teamId.
- * @apiSuccess {Number} hotelId Visit's hotelId.
- * @apiSuccess {Object} hotel Hotels of the visit.
- * @apiSuccess {Number} hotel.id ID of the Hotel.
- * @apiSuccess {String} hotel.name Name of the Hotel.
- * @apiSuccess {String} hotel.address Address of the Hotel.
- * @apiSuccess {Number} hotel.zipCode Zip code of the Hotel.
- * @apiSuccess {String} hotel.city City of the Hotel.
- * @apiSuccess {String} hotel.createdAt Hotel row creation date.
- * @apiSuccess {String} hotel.updatedAt Hotel row update date.
- * @apiSuccess {String} start Visit's start date string.
- * @apiSuccess {String} end Visit's end date string.
- *
- */
-router.get('/visits/:teamId/:date', async (req, res) => {
-  if (!req.params.date) throw new Error('No date');
-  if (!req.params.teamId) throw new Error('No teamId');
-  let plannedVisits: any = [];
-  let visits = await Visit.findAll({
-    where: {
-      status: 0,
-      teamId: req.params.teamId,
-    },
-    include: [
-      {
-        model: Hotel,
-      },
-    ],
-    raw: true,
-    nest: true,
-  });
-
-  visits = visits.filter(
-    // get next week's team
-    visit =>
-      getNumberOfWeek(new Date(req.params.date)) ===
-      getNumberOfWeek(new Date(visit.date)),
-  );
-  const teams = await getWeeksTeamsFromDate(new Date(req.params.date));
-  teams.map(team => {
-    const requestedDate = team.date ? new Date(team.date) : new Date();
-    if (getNumberOfWeek(requestedDate) === getNumberOfWeek(new Date()) + 1) {
-      plannedVisits = [...plannedVisits, ...generatesPlanning(visits)];
-    }
-  });
-  res.send(plannedVisits);
 });
 
 export default router;
