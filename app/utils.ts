@@ -54,7 +54,22 @@ export const sendVisitCancellationMail = (visit: Visit | any): void => {
       to: 'ten4ssdp@gmail.com',
       subject: `Annulation de la visite de l'hotel ${visit.hotel.name}`,
       html: /* html */ `
-        <p>Le binôme <strong>${visit.team.name}</strong> à annulé la visite du ${visit.date} à l'hôtel ${visit.hotel.name}.<br/>Retrouvez cette annulation sur le <strong>backoffice</strong> dans le planning du binôme.</p>
+        <p>Le binôme <strong>${
+          visit.team.name
+        }</strong> a annulé la visite du ${visit.date} à l'hôtel ${
+        visit.hotel.name
+      }.<br/>Retrouvez cette annulation sur le <strong>backoffice</strong> dans le planning du binôme.</p>
+        <br/>
+        ${
+          visit?.description
+            ? /* html */ `
+          <p>Commentaire du binome :</p>
+          <p>
+            ${visit.description}
+          </p>
+        `
+            : ''
+        }
       `,
     };
     transporter.sendMail(mailOptions, (error, info) => {
