@@ -76,13 +76,13 @@ router.get('/teams/:userId(\\d+)', async (req, res) => {
  * @apiSuccess {Date} createdAt
  * @apiSuccess {Date} updatedAt
  * @apiSuccess {Number} sectorId
- * @apiSuccess {Object[]} teamComposition UserObject
- * @apiSuccess {Number} teamComposition.user.id
- * @apiSuccess {String} teamComposition.user.name
- * @apiSuccess {String} teamComposition.user.lastname
- * @apiSuccess {String} teamComposition.user.email
- * @apiSuccess {String} teamComposition.user.sectorId
- * @apiSuccess {String} teamComposition.user.roleId
+ * @apiSuccess {Object[]} users
+ * @apiSuccess {Number} users.id
+ * @apiSuccess {String} users.name
+ * @apiSuccess {String} users.lastname
+ * @apiSuccess {String} users.email
+ * @apiSuccess {String} users.sectorId
+ * @apiSuccess {String} users.roleId
  */
 router.get('/teams/:userId(\\d+)/:date', async (req, res) => {
   const {
