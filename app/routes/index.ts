@@ -31,6 +31,7 @@ router.post(
     }
 
     const token = generateToken({
+      id: userFound.id,
       name: userFound.name,
       lastname: userFound.lastname,
       role: {
