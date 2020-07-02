@@ -123,3 +123,5 @@ db.sync()
 // });
 
 app.listen(PORT, () => console.log(`| INFO | SERVER STARTED AT PORT ${PORT}.`));
+
+export default app;
