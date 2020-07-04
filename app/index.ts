@@ -167,3 +167,5 @@ export const transporter = nodemailer.createTransport({
     pass: process.env.GMAIL_PASSWORD,
   },
 });
+
+export default app;
