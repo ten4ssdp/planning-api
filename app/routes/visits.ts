@@ -77,6 +77,7 @@ router.get('/visits/user/:userId/:date', async (req, res) => {
       });
     }
     const findOptions: FindOptions | any = {
+      [Op.or]: [{ status: 0 }, { status: -1 }, { status: 1 }],
       where: {
         teamId: team.id,
         isUrgent: {
