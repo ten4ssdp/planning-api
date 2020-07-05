@@ -12,14 +12,14 @@ afterAll(() => {
 
 describe('POST /login', () => {
   // credentials OK
-  it('responds with 200 status', async done => {
+  it('responds with 200 status', done => {
     request(server)
       .get('/api/login')
       .send({ email: userEmail, password: userPassword })
       .expect(200, done);
   });
   // credentials non OK
-  it('responds with 400 status', async done => {
+  it('responds with 400 status', done => {
     request(server)
       .get('/api/login')
       .send({ email: null, password: null })

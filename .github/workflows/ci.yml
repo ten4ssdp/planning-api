@@ -29,7 +29,7 @@ jobs:
         run: npm run testCi
         env:
           CI: true
-          DB_USERNAME: root
+          DB_USERNAME: postgres
           DB_PASSWORD: postgres
           DB_HOST: postgres
           DB_PORT: 5432
