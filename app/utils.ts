@@ -4,7 +4,15 @@ import { getUsersFromTeam } from './mickey/functions/teams';
 import { connectedUser, io, transporter } from './index';
 import Visit from './models/Visit';
 import { usersToNotified } from './routes/notifications';
-import { Expo } from 'expo-server-sdk';
+import { Expo, ExpoPushMessage } from 'expo-server-sdk';
+
+interface Message {
+  to: string;
+  sound: string;
+  body: string;
+  data: object;
+}
+
 const expo = new Expo();
 
 export const pipe = (...fns) => (x): any => fns.reduce((v, f) => f(v), x);
@@ -39,7 +47,7 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
   if (visit.isUrgent === true) {
     const teamsUsers = await getUsersFromTeam(visit.teamId);
     const usersId: Array<number | string> = teamsUsers.map(tc => tc?.user?.id);
-    const messages = [];
+    const messages: Array<ExpoPushMessage> = [];
     usersId.forEach(id => {
       const currentUser = usersToNotified.find(user => user.id === id);
       if (currentUser) {
@@ -53,7 +61,6 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
           to: currentUser.token,
           sound: 'default',
           body: `URGENCE: ${visit.hotel.name}`,
-          data: { withSome: 'data' },
         });
       }
 
