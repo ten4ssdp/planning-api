@@ -36,7 +36,7 @@ import nodemailer from 'nodemailer';
 import http from 'http';
 
 const app = express();
-const server = http.createServer(app);
+export const server = http.createServer(app);
 const PORT = process.env.PORT || '5000';
 
 app.use(cors());
@@ -65,29 +65,29 @@ db.authenticate()
 db.sync()
   .then(() => {
     // add roles to DB
-    rolesJSON.map(role => {
-      Role.create({
+    const rolesCreate = rolesJSON.map(async role => {
+      await Role.create({
         ...role,
       });
     });
 
     // add parking to DB
-    parkingsJSON.map(parking => {
-      Parking.create({
+    const parkingsCreate = parkingsJSON.map(async parking => {
+      await Parking.create({
         ...parking,
       });
     });
 
     // add sectors to DB
-    sectorsJSON.map(sector => {
-      Sector.create({
+    const sectorsCreate = sectorsJSON.map(async sector => {
+      await Sector.create({
         ...sector,
       });
     });
 
     // add users to DB
-    usersJSON.map(async user => {
-      User.create({
+    const usersCreate = usersJSON.map(async user => {
+      await User.create({
         ...user,
         ...(!user.email && {
           email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
@@ -99,19 +99,19 @@ db.sync()
     });
 
     // add hotels to DB
-    hotelsJSON.map(hotel => {
-      Hotel.create({
+    const hotelsCreate = hotelsJSON.map(async hotel => {
+      await Hotel.create({
         ...hotel,
       });
     });
 
     // add visits to DB
-    visitsJSON.map(visit => {
+    const visitsCreate = visitsJSON.map(async visit => {
       const date = moment(visit.date, 'D/M/YYYY')
         .utc()
         .valueOf();
 
-      Visit.create({
+      await Visit.create({
         ...visit,
         date,
         status: 1,
@@ -120,11 +120,26 @@ db.sync()
     });
 
     // add vehicles to DB
-    vehiclesJSON.map(vehicle => {
-      Vehicle.create({
+    const vehiclesCreate = vehiclesJSON.map(async vehicle => {
+      await Vehicle.create({
         ...vehicle,
       });
     });
+
+    const tablesCreate = [
+      ...rolesCreate,
+      ...parkingsCreate,
+      ...sectorsCreate,
+      ...usersCreate,
+      ...hotelsCreate,
+      ...visitsCreate,
+      ...vehiclesCreate,
+    ];
+
+    return Promise.all(tablesCreate);
+  })
+  .then(() => {
+    server.emit('dbinit');
   })
   .catch(err => {
     throw err;
@@ -167,6 +182,6 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-export default server;
-
 server.listen(PORT, () => console.log('APP RUNNING'));
+
+export default server;

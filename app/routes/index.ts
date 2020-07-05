@@ -11,6 +11,7 @@ router.post(
   '/login',
   async (req, res): Promise<void> => {
     const { email, password } = req.body;
+    let matchPwd;
 
     if (!email || !password) {
       res
@@ -24,10 +25,13 @@ router.post(
       raw: true,
     });
 
-    const matchPwd = await bcrypt.compare(password, userFound.password);
+    if (userFound) {
+      matchPwd = await bcrypt.compare(password, userFound.password);
+    }
 
     if (!userFound || !matchPwd) {
       res.status(400).json({ error: 'Email ou Mot de passe invalide.' });
+      return;
     }
 
     const token = generateToken({
