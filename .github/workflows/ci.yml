@@ -17,3 +17,5 @@ jobs:
         run: npm run lint
       - name: Launch tests
         run: npm run testCi
+        env:
+          CI: true
