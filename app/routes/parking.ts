@@ -33,7 +33,7 @@ router.get('/parkings', async (req, res) => {
           model: Vehicle,
         },
       ],
-      ...(req.query.limit && { limit: Number(req.query.limit)}),
+      ...(req.query.limit && { limit: Number(req.query.limit) }),
       order: [['address', 'ASC']],
     };
     const parkings = await Parking.findAll(findOptions);

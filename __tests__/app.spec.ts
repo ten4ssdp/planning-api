@@ -1,8 +1,8 @@
 import request from 'supertest';
 import app from '../app/index';
 
-const user_email = 'eric.salarie-1@ssdp.net';
-const user_password = '1234';
+const userEmail = 'eric.salarie-1@ssdp.net';
+const userPassword = '1234';
 
 // test des deux scénarios de connexion (OK ou pas)
 
@@ -11,7 +11,7 @@ describe('POST /login', () => {
   it('responds with 200 status', async () => {
     request(app)
       .get('/api/login')
-      .send({ email: user_email, password: user_password })
+      .send({ email: userEmail, password: userPassword })
       .expect(200);
   });
   // credentials non OK
