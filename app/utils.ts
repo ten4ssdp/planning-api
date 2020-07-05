@@ -4,7 +4,7 @@ import { getUsersFromTeam } from './mickey/functions/teams';
 import { connectedUser, io, transporter } from './index';
 import Visit from './models/Visit';
 import { usersToNotified } from './routes/notifications';
-import { Expo, ExpoPushMessage } from 'expo-server-sdk';
+import { Expo, ExpoPushMessage, ExpoPushTicket } from 'expo-server-sdk';
 
 interface Message {
   to: string;
@@ -72,9 +72,43 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
     });
 
     const chunks = expo.chunkPushNotifications(messages);
+    const tickets: Array<ExpoPushTicket> = [];
     for (const chunk of chunks) {
       try {
         const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+        console.log(ticketChunk);
+        tickets.push(...ticketChunk);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    const receiptIds: Array<string> = [];
+    for (const ticket of tickets) {
+      if ('id' in ticket && ticket.id) {
+        receiptIds.push(ticket.id);
+      }
+    }
+
+    const receiptIdChunks = expo.chunkPushNotificationReceiptIds(receiptIds);
+    for (const chunk of receiptIdChunks) {
+      try {
+        const receipts = await expo.getPushNotificationReceiptsAsync(chunk);
+        for (const receiptId in receipts) {
+          const { status, details } = receipts[receiptId];
+          if (status === 'ok') {
+            continue;
+          } else if (status === 'error') {
+            const e = receipts[receiptId];
+            console.error(
+              `There was an error sending a notification: ${'message' in e &&
+                e.message}`,
+            );
+            if (details && 'error' in details && details.error) {
+              console.error(`The error code is ${details.error}`);
+            }
+          }
+        }
       } catch (error) {
         console.error(error);
       }
