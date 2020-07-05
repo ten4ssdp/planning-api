@@ -34,9 +34,10 @@ import path from 'path';
 import socketIO from 'socket.io';
 import { getUserIdFromToken } from './utils';
 import nodemailer from 'nodemailer';
+import http from 'http';
 
 const app = express();
-const server = require('http').createServer(app);
+const server = http.createServer(app);
 const PORT = process.env.PORT || '5000';
 
 app.use(cors());
@@ -160,8 +161,6 @@ io.on('connection', socket => {
   });
 });
 
-server.listen(PORT, () => console.log('APP RUNNING'));
-
 export const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -171,3 +170,5 @@ export const transporter = nodemailer.createTransport({
 });
 
 export default server;
+
+server.listen(PORT, () => console.log('APP RUNNING'));

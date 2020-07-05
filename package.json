@@ -11,7 +11,7 @@
     "start": "node ./app/index.ts",
     "tsc": "tsc",
     "test": "jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1",
-    "testCi": "jest",
+    "testCi": "jest --runInBand --detectOpenHandles",
     "prod": "tsc && node ./dist/index.js",
     "apidoc": "apidoc -i ./app -o apidoc/ -f '.*\\.ts$'"
   },
@@ -52,7 +52,7 @@
     "pg": "^7.18.0",
     "pg-hstore": "^2.3.3",
     "sequelize": "^5.21.3",
-    "socket.io": "github:punkte/socket.io#jest-fix",
+    "socket.io": "^2.1.0",
     "supertest": "^4.0.2"
   }
 }
