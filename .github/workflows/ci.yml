@@ -16,4 +16,4 @@ jobs:
       - name: Lint files
         run: npm run lint
       - name: Launch tests
-        run: npm run test
+        run: npm run testCi
