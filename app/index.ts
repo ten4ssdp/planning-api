@@ -28,6 +28,7 @@ import userRoutes from './routes/user';
 import teamsRoutes from './routes/teams';
 import visitsRoutes from './routes/visits';
 import vehicleRoutes from './routes/vehicle';
+import notificationsRoutes from './routes/notifications';
 import bcrypt from 'bcrypt';
 import path from 'path';
 import socketIO from 'socket.io';
@@ -48,6 +49,7 @@ app.use(
   express.static(path.resolve(__dirname + '/../apidoc')),
 );
 app.use('/api', indexRoutes);
+app.use('/api', verify, notificationsRoutes);
 app.use('/api/user', verify, userRoutes);
 app.use('/api', verify, vehicleRoutes);
 app.use('/api', verify, hotelRoutes);

@@ -3,6 +3,9 @@ import jwt from 'jsonwebtoken';
 import { getUsersFromTeam } from './mickey/functions/teams';
 import { connectedUser, io, transporter } from './index';
 import Visit from './models/Visit';
+import { usersToNotified } from './routes/notifications';
+import { Expo } from 'expo-server-sdk';
+const expo = new Expo();
 
 export const pipe = (...fns) => (x): any => fns.reduce((v, f) => f(v), x);
 
@@ -36,13 +39,39 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
   if (visit.isUrgent === true) {
     const teamsUsers = await getUsersFromTeam(visit.teamId);
     const usersId: Array<number | string> = teamsUsers.map(tc => tc?.user?.id);
+    const messages = [];
     usersId.forEach(id => {
+      const currentUser = usersToNotified.find(user => user.id === id);
+      if (currentUser) {
+        if (!Expo.isExpoPushToken(currentUser.token)) {
+          console.error(
+            `Push token ${currentUser.token} is not a valid Expo push token`,
+          );
+        }
+
+        messages.push({
+          to: currentUser.token,
+          sound: 'default',
+          body: `URGENCE: ${visit.hotel.name}`,
+          data: { withSome: 'data' },
+        });
+      }
+
       if (connectedUser.hasOwnProperty(id)) {
         connectedUser[id].forEach(socketId => {
           io.to(socketId).emit('emergency', visit);
         });
       }
     });
+
+    const chunks = expo.chunkPushNotifications(messages);
+    for (const chunk of chunks) {
+      try {
+        const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 };
 
