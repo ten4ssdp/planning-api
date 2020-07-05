@@ -7,10 +7,11 @@
   "license": "MIT",
   "scripts": {
     "dev": "ts-node-dev --inspect=0.0.0.0:5858 --respawn --transpileOnly ./app/index.ts",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint --ext .js,.ts --ignore-path .eslintignore .",
     "start": "node ./app/index.ts",
     "tsc": "tsc",
     "test": "jest --forceExit --detectOpenHandles  --watchAll --maxWorkers=1",
+    "testCi": "jest",
     "prod": "tsc && node ./dist/index.js",
     "apidoc": "apidoc -i ./app -o apidoc/ -f '.*\\.ts$'"
   },

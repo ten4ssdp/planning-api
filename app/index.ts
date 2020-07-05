@@ -168,4 +168,4 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-export default app;
+export default server;
