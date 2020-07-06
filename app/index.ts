@@ -61,7 +61,7 @@ app.use('/api', verify, visitsRoutes);
 app.use('/api/mickey', verify, mickeyRoutes);
 
 db.authenticate()
-  .then(() => console.log('Database connected ...'))
+  .then(() => console.log('Database connected at ' + new Date().getTime()))
   .catch(err => console.log('Unable to connect to the database', err));
 
 db.sync()
@@ -141,6 +141,7 @@ db.sync()
     return Promise.all(tablesCreate);
   })
   .then(() => {
+    console.log('tables created at ' + new Date().getTime());
     server.emit('dbinit');
   })
   .catch(err => {
@@ -185,5 +186,7 @@ export const transporter = nodemailer.createTransport({
 });
 
 server.listen(PORT, () => console.log('APP RUNNING'));
-
+server.on('close', () => {
+  db.close();
+});
 export default server;

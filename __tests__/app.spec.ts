@@ -6,18 +6,18 @@ const userPassword = '1234';
 
 // test des deux scénarios de connexion (OK ou pas)
 
-afterAll(done => {
-  server.close(done);
-});
-
-beforeAll(done => {
-  return new Promise(resolve => {
+beforeAll(async () => {
+  await new Promise(resolve => {
     server.on('dbinit', () => {
-      console.log('dbinit');
-      resolve(() => done());
+      console.log('db initialized at ' + new Date().getTime());
+      resolve();
     });
   });
-});
+}, 120000);
+
+afterAll(done => {
+  server.close(() => done());
+}, 15000);
 
 describe('POST /login', () => {
   // credentials OK
@@ -25,7 +25,6 @@ describe('POST /login', () => {
     request(server)
       .post('/api/login')
       .send({ email: userEmail, password: userPassword })
-      .set('Accept', 'application/json')
       .expect(200, done);
   });
   // credentials non OK
@@ -33,7 +32,6 @@ describe('POST /login', () => {
     request(server)
       .post('/api/login')
       .send({ email: null, password: null })
-      .set('Accept', 'application/json')
       .expect(400, done);
   });
 });
