@@ -3,12 +3,17 @@ import moment from 'moment';
 import Visit from '../../models/Visit';
 
 export const generatesPlanning = (visits: Visit[], firstDay: Date) => {
-  let currentDay: Date = firstDay;
+  let currentDay: Date = new Date(
+    moment(firstDay)
+      .add(1, 'days')
+      .valueOf(),
+  );
   let plannedVisits: any = [];
   while (visits.length > 0) {
     const dayVisits = visits.splice(0, VISITS_BY_DAY);
     let hour = 9;
     currentDay = new Date(currentDay.setHours(hour, 0));
+
     // for each visit of a day
     for (let i = 0; i < dayVisits.length; i++) {
       const visit = dayVisits[i];
@@ -26,7 +31,6 @@ export const generatesPlanning = (visits: Visit[], firstDay: Date) => {
       }
       currentDay = new Date(currentDay.setHours(hour, 0));
     }
-    // TODO: ajouter le jour de repos
     currentDay = new Date(
       moment(currentDay)
         .add(1, 'days')

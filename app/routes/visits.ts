@@ -91,6 +91,7 @@ router.get('/visits/user/:userId/:date', async (req, res) => {
           model: Hotel,
         },
       ],
+      order: [[Hotel, 'id', 'DESC']],
       raw: true,
       nest: true,
     };
@@ -114,6 +115,10 @@ router.get('/visits/user/:userId/:date', async (req, res) => {
       ...plannedVisits,
       ...generatesPlanning(visits, formattedDate),
     ];
+    plannedVisits = plannedVisits.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
+
     res.send({ visits: plannedVisits, emergencies });
   } catch (error) {
     res.status(400).send({ error: error.message });
@@ -152,11 +157,12 @@ router.get('/visits/:teamId/:date', async (req, res) => {
   if (!req.params.teamId) throw new Error('No teamId');
   const date = new Date(req.params.date);
   let plannedVisits: any = [];
-  let visits = await Visit.findAll({
+  const visits = await Visit.findAll({
     where: {
       // status: 0,
-      [Op.or]: [{ status: 0 }, { status: -1 }],
+      [Op.or]: [{ status: 0 }, { status: -1 }, { status: 1 }],
       teamId: req.params.teamId,
+      date: req.params.date,
       isUrgent: {
         [Op.not]: true,
       },
@@ -166,12 +172,14 @@ router.get('/visits/:teamId/:date', async (req, res) => {
         model: Hotel,
       },
     ],
+    order: [[Hotel, 'id', 'DESC']],
     raw: true,
     nest: true,
   });
 
   const emergencies = await Visit.findAll({
     where: {
+      date: req.params.date,
       teamId: req.params.teamId,
       isUrgent: true,
     },
@@ -184,13 +192,10 @@ router.get('/visits/:teamId/:date', async (req, res) => {
     nest: true,
   });
 
-  visits = visits.filter(
-    // get next week's team
-    visit =>
-      getWeekNumber(new Date(req.params.date)) ===
-      getWeekNumber(new Date(visit.date)),
-  );
   plannedVisits = [...plannedVisits, ...generatesPlanning(visits, date)];
+  plannedVisits = plannedVisits.sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
   res.send({ visits: plannedVisits, emergencies });
 });
 
