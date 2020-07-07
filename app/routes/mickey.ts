@@ -6,6 +6,7 @@ import Team from '../models/Team';
 import User from '../models/User';
 import { getWeeksTeamsFromDate } from '../mickey/functions/teams';
 import { setUsersToVisits } from '../mickey/functions/visits';
+import { Op } from 'sequelize';
 
 const router = express.Router();
 
@@ -76,7 +77,9 @@ router.get('/teams/:date', async (req, res) => {
 router.get('/visits', async (req, res) => {
   let visits = await Visit.findAll({
     where: {
-      status: 0,
+      status: {
+        [Op.or]: [{ status: 0 }, { status: -1 }, { status: 1 }],
+      },
     },
     include: [
       Hotel,
