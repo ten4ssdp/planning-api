@@ -27,4 +27,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           ANSIBLE_CFG: ./devops/ansible/ansible.cfg
           ANSIBLE_HOST_KEY_CHECKING: False
-        run: ansible-playbook devops/ansible/deploy.yml -i devops/ansible/inventory/ec2.py --vault-password-file ./keys/.vault_pass.txt --key-file ./keys/.ssh/id_rsa --extra-vars "app=back executed_by_runner=yes"
+        run: ansible-playbook devops/ansible/deploy.yml -i devops/ansible/inventory/ec2.py -u ubuntu --vault-password-file ./keys/.vault_pass.txt --key-file ./keys/.ssh/id_rsa --extra-vars "app=back executed_by_runner=yes" -t site
