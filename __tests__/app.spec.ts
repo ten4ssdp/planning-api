@@ -1,5 +1,5 @@
 import request from 'supertest';
-import server from '../app/index';
+import server, { io } from '../app/index';
 
 const userEmail = 'eric.salarie-1@ssdp.net';
 const userPassword = '1234';
@@ -16,7 +16,10 @@ beforeAll(async () => {
 }, 120000);
 
 afterAll(done => {
-  server.close(() => done());
+  server.close(() => {
+    io.close();
+    done();
+  });
 }, 15000);
 
 describe('POST /login', () => {
