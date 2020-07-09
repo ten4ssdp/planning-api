@@ -1,7 +1,7 @@
 import moment from 'moment';
 import jwt from 'jsonwebtoken';
 import { getUsersFromTeam } from './mickey/functions/teams';
-import { connectedUser, io, transporter } from './index';
+import { io, transporter } from './index';
 import Visit from './models/Visit';
 import { usersToNotified } from './routes/notifications';
 import { Expo, ExpoPushMessage, ExpoPushTicket } from 'expo-server-sdk';
@@ -48,6 +48,13 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
     const teamsUsers = await getUsersFromTeam(visit.teamId);
     const usersId: Array<number | string> = teamsUsers.map(tc => tc?.user?.id);
     const messages: Array<ExpoPushMessage> = [];
+    const users = await getUsersFromTeam(visit.teamId);
+    if (users.length > 0) {
+      users.forEach(userObject => {
+        const userIdToNotify = userObject.user.id;
+        io.to(`${userIdToNotify}`).emit('emergency', visit);
+      });
+    }
     usersId.forEach(id => {
       const currentUser = usersToNotified.find(user => user.id === id);
       if (currentUser) {
@@ -61,12 +68,6 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
           to: currentUser.token,
           sound: 'default',
           body: `URGENCE: ${visit.hotel.name}`,
-        });
-      }
-
-      if (connectedUser.hasOwnProperty(id)) {
-        connectedUser[id].forEach(socketId => {
-          io.to(socketId).emit('emergency', visit);
         });
       }
     });
