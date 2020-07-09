@@ -119,15 +119,18 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
 
 export const sendVisitCancellationMail = (visit: Visit | any): void => {
   if (visit.status === -1) {
-    console.log({ visit });
+    const formattedDate = visit.date
+      .split('-')
+      .reverse()
+      .join('/');
     const mailOptions = {
-      from: 'ten4ssdp@gmail.com',
-      to: 'ten4ssdp@gmail.com',
+      from: process.env.GMAIL_ADDRESS,
+      to: process.env.GMAIL_ADDRESS,
       subject: `Annulation de la visite de l'hotel ${visit.hotel.name}`,
       html: /* html */ `
         <p>Le binôme <strong>${
           visit.team.name
-        }</strong> a annulé la visite du ${visit.date} à l'hôtel ${
+        }</strong> a annulé la visite du ${formattedDate} à l'hôtel ${
         visit.hotel.name
       }.<br/>Retrouvez cette annulation sur le <strong>backoffice</strong> dans le planning du binôme.</p>
         <br/>
