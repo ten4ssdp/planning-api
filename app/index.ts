@@ -66,31 +66,31 @@ db.authenticate()
   .catch(err => console.log('Unable to connect to the database', err));
 
 db.sync()
-  .then(() => {
+  .then(async () => {
     // add roles to DB
-    const rolesCreate = rolesJSON.map(async role => {
-      await Role.create({
+    await Promise.all(rolesJSON.map(async role => {
+      return await Role.create({
         ...role,
       });
-    });
+    }));
 
     // add parking to DB
-    const parkingsCreate = parkingsJSON.map(async parking => {
-      await Parking.create({
+    await Promise.all(parkingsJSON.map(async parking => {
+      return await Parking.create({
         ...parking,
       });
-    });
+    }));
 
     // add sectors to DB
-    const sectorsCreate = sectorsJSON.map(async sector => {
-      await Sector.create({
+    await Promise.all(sectorsJSON.map(async sector => {
+      return await Sector.create({
         ...sector,
       });
-    });
+    }));
 
     // add users to DB
-    const usersCreate = usersJSON.map(async user => {
-      await User.create({
+    await Promise.all(usersJSON.map(async user => {
+      return await User.create({
         ...user,
         ...(!user.email && {
           email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
@@ -99,47 +99,37 @@ db.sync()
           ? await bcrypt.hash(user.password, 10)
           : await bcrypt.hash('1234', 10),
       });
-    });
+    }));
 
     // add hotels to DB
-    const hotelsCreate = hotelsJSON.map(async hotel => {
-      await Hotel.create({
+    await Promise.all(hotelsJSON.map(async hotel => {
+      return await Hotel.create({
         ...hotel,
       });
-    });
+    }));
 
     // add visits to DB
-    const visitsCreate = visitsJSON.map(async visit => {
+    await Promise.all(visitsJSON.map(async visit => {
       const date = moment(visit.date, 'D/M/YYYY')
         .utc()
         .valueOf();
 
-      await Visit.create({
+      return await Visit.create({
         ...visit,
         date,
         status: 1,
         rate: parseFloat(visit.rate.toString().replace(',', '.')),
       });
-    });
+    }));
 
     // add vehicles to DB
-    const vehiclesCreate = vehiclesJSON.map(async vehicle => {
-      await Vehicle.create({
+    await Promise.all(vehiclesJSON.map(async vehicle => {
+      return await Vehicle.create({
         ...vehicle,
       });
-    });
+    }));
 
-    const tablesCreate = [
-      ...rolesCreate,
-      ...parkingsCreate,
-      ...sectorsCreate,
-      ...usersCreate,
-      ...hotelsCreate,
-      ...visitsCreate,
-      ...vehiclesCreate,
-    ];
-
-    return Promise.all(tablesCreate);
+    return;
   })
   .then(() => {
     console.log('tables created at ' + new Date().getTime());
