@@ -48,6 +48,7 @@ app.use(
   '/documentation',
   express.static(path.resolve(__dirname + '/../apidoc')),
 );
+
 app.use('/api', indexRoutes);
 app.use('/api/user', verify, userRoutes);
 app.use('/api', verify, vehicleRoutes);
@@ -146,11 +147,6 @@ db.sync()
     throw err;
   });
 
-// gestion des erreurs
-// app.use((err, req, res, next) => {
-//   handleError(err, req);
-// });
-
 export const io = socketIO(server);
 
 export const connectedUser = {};
@@ -184,7 +180,9 @@ export const transporter = nodemailer.createTransport({
 });
 
 server.listen(PORT, () => console.log('APP RUNNING'));
+
 server.on('close', () => {
   db.close();
 });
+
 export default server;

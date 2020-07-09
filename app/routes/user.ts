@@ -4,8 +4,30 @@ import verifyPermission from '../helpers/verifyPermission';
 import Role from '../models/Role';
 import Sector from '../models/Sector';
 import User from '../models/User';
+import * as yup from 'yup';
+import { nextTick } from 'process';
+import ErrorHandler, { handleError } from '../helpers/error';
 
 const router = express.Router();
+
+const userSchema = yup.object().shape({
+  name: yup.string().defined(),
+  lastname: yup.string().defined(),
+  address: yup.string().defined(),
+  email: yup
+    .string()
+    .email()
+    .defined(),
+  password: yup.string().defined(),
+  roleId: yup
+    .number()
+    .positive()
+    .defined(),
+  sectorId: yup
+    .number()
+    .positive()
+    .defined(),
+});
 
 router.use(verifyPermission);
 
@@ -62,22 +84,27 @@ router.put('/:id(\\d+)', async (req, res) => {
   try {
     const hash = await bcrypt.hash(req.body.password, 10);
 
-    const result = await User.update(
-      {
-        name: req.body.name,
-        lastname: req.body.lastname,
-        address: req.body.address,
-        email: req.body.email,
-        password: hash,
-        roleId: req.body.roleId,
-        sectorId: req.body.sectorId,
-      },
-      {
-        where: { id: req.params.id },
-        returning: true,
-        validate: true,
-      },
-    );
+    const payload = {
+      name: req.body.name,
+      lastname: req.body.lastname,
+      address: req.body.address,
+      email: req.body.email,
+      password: hash,
+      roleId: Number(req.body.roleId),
+      sectorId: Number(req.body.sectorId),
+    };
+
+    let valid = await userSchema.isValid(payload);
+
+    if (valid === false) {
+      res.status(403).json({ error: 'Mauvaises données' });
+    }
+
+    const result = await User.update(payload, {
+      where: { id: req.params.id },
+      returning: true,
+      validate: true,
+    });
 
     const [rowsUpdate, [updatedUser]] = result;
 
@@ -95,7 +122,8 @@ router.put('/:id(\\d+)', async (req, res) => {
       res.status(400).json({ error: "Cet utilisateur n'existe pas." });
     }
   } catch (err) {
-    res.status(500);
+    console.log(err);
+    res.status(500).json({ error: 'Internal server error.' });
   }
 });
 
@@ -179,17 +207,25 @@ router.post(
     try {
       const hash = await bcrypt.hash(req.body.password, 10);
 
+      let payload = {
+        name: req.body.name,
+        lastname: req.body.lastname,
+        address: req.body.address,
+        email: req.body.email,
+        password: hash,
+        roleId: req.body.roleId,
+        sectorId: req.body.sectorId,
+      };
+
+      let valid = await userSchema.isValid(payload);
+
+      if (valid === false) {
+        res.status(403).json({ error: 'Mauvaises données' });
+      }
+
       const result = await User.findOrCreate({
         where: { email: req.body.email },
-        defaults: {
-          name: req.body.name,
-          lastname: req.body.lastname,
-          address: req.body.address,
-          email: req.body.email,
-          password: hash,
-          roleId: req.body.roleId,
-          sectorId: req.body.sectorId,
-        },
+        defaults: payload,
       });
 
       const [model, created] = result;

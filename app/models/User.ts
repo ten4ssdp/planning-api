@@ -5,6 +5,16 @@ import Sector from './Sector';
 import TeamComposition from './TeamComposition';
 import Team from './Team';
 
+type UserInteface = {
+  id: number | null;
+  name: string;
+  lastname: string;
+  email: string;
+  password: string;
+  roleId: number | null;
+  sectorId: number | null;
+};
+
 class User extends Model {
   public id!: number;
   public name!: string;
