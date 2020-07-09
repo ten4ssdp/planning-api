@@ -1,7 +1,7 @@
 import moment from 'moment';
 import jwt from 'jsonwebtoken';
 import { getUsersFromTeam } from './mickey/functions/teams';
-import { connectedUser, io, transporter } from './index';
+import { io, transporter } from './index';
 import Visit from './models/Visit';
 import { usersToNotified } from './routes/notifications';
 import { Expo, ExpoPushMessage, ExpoPushTicket } from 'expo-server-sdk';
@@ -48,6 +48,13 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
     const teamsUsers = await getUsersFromTeam(visit.teamId);
     const usersId: Array<number | string> = teamsUsers.map(tc => tc?.user?.id);
     const messages: Array<ExpoPushMessage> = [];
+    const users = await getUsersFromTeam(visit.teamId);
+    if (users.length > 0) {
+      users.forEach(userObject => {
+        const userIdToNotify = userObject.user.id;
+        io.to(`${userIdToNotify}`).emit('emergency', visit);
+      });
+    }
     usersId.forEach(id => {
       const currentUser = usersToNotified.find(user => user.id === id);
       if (currentUser) {
@@ -61,12 +68,6 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
           to: currentUser.token,
           sound: 'default',
           body: `URGENCE: ${visit.hotel.name}`,
-        });
-      }
-
-      if (connectedUser.hasOwnProperty(id)) {
-        connectedUser[id].forEach(socketId => {
-          io.to(socketId).emit('emergency', visit);
         });
       }
     });
@@ -118,15 +119,18 @@ export const sendEmergencyVisit = async (visit): Promise<void> => {
 
 export const sendVisitCancellationMail = (visit: Visit | any): void => {
   if (visit.status === -1) {
-    console.log({ visit });
+    const formattedDate = visit.date
+      .split('-')
+      .reverse()
+      .join('/');
     const mailOptions = {
-      from: 'ten4ssdp@gmail.com',
-      to: 'ten4ssdp@gmail.com',
+      from: process.env.GMAIL_ADDRESS,
+      to: process.env.GMAIL_ADDRESS,
       subject: `Annulation de la visite de l'hotel ${visit.hotel.name}`,
       html: /* html */ `
         <p>Le binôme <strong>${
           visit.team.name
-        }</strong> a annulé la visite du ${visit.date} à l'hôtel ${
+        }</strong> a annulé la visite du ${formattedDate} à l'hôtel ${
         visit.hotel.name
       }.<br/>Retrouvez cette annulation sur le <strong>backoffice</strong> dans le planning du binôme.</p>
         <br/>

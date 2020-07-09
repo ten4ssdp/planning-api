@@ -35,6 +35,7 @@ import socketIO from 'socket.io';
 import { getUserIdFromToken } from './utils';
 import nodemailer from 'nodemailer';
 import http from 'http';
+import redisAdapter from 'socket.io-redis';
 
 const app = express();
 export const server = http.createServer(app);
@@ -154,25 +155,23 @@ db.sync()
 // });
 
 export const io = socketIO(server);
+const REDIS_HOST = process.env.REDIS_URL || 'redis-cache';
+const REDIS_PORT =
+  parseInt(process.env.REDIS_PORT ? process.env.REDIS_PORT : '6379') || 6379;
+
+io.adapter(redisAdapter({ host: REDIS_HOST, port: REDIS_PORT }));
 
 export const connectedUser = {};
 
 io.on('connection', socket => {
   socket.on('join', function(token) {
     const userId = getUserIdFromToken(token);
-    connectedUser[userId] = [...(connectedUser[userId] || []), socket.id];
-    io.emit('messages', JSON.stringify(connectedUser));
+    socket.join(userId);
+    io.emit('messages', JSON.stringify(socket.rooms));
   });
-
   // https://socket.io/docs/rooms-and-namespaces/
 
   socket.on('disconnect', function() {
-    console.log('leave' + socket.id);
-    Object.keys(connectedUser).map(key => {
-      if (connectedUser[key].includes(socket.id)) {
-        connectedUser[key] = connectedUser[key].filter(id => id !== socket.id);
-      }
-    });
     io.emit('messages', JSON.stringify(connectedUser));
   });
 });
