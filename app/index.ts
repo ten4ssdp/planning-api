@@ -68,66 +68,82 @@ db.authenticate()
 db.sync()
   .then(async () => {
     // add roles to DB
-    await Promise.all(rolesJSON.map(async role => {
-      return await Role.create({
-        ...role,
-      });
-    }));
+    await Promise.all(
+      rolesJSON.map(async role => {
+        return await Role.create({
+          ...role,
+        });
+      }),
+    );
 
     // add parking to DB
-    await Promise.all(parkingsJSON.map(async parking => {
-      return await Parking.create({
-        ...parking,
-      });
-    }));
+    await Promise.all(
+      parkingsJSON.map(async parking => {
+        return await Parking.create({
+          ...parking,
+        });
+      }),
+    );
 
     // add sectors to DB
-    await Promise.all(sectorsJSON.map(async sector => {
-      return await Sector.create({
-        ...sector,
-      });
-    }));
+    await Promise.all(
+      sectorsJSON.map(async sector => {
+        return await Sector.create({
+          ...sector,
+        });
+      }),
+    );
 
     // add users to DB
-    await Promise.all(usersJSON.map(async user => {
-      return await User.create({
-        ...user,
-        ...(!user.email && {
-          email: `${kebabCase(user.name)}.${kebabCase(user.lastname)}@ssdp.net`,
-        }),
-        password: user.password
-          ? await bcrypt.hash(user.password, 10)
-          : await bcrypt.hash('1234', 10),
-      });
-    }));
+    await Promise.all(
+      usersJSON.map(async user => {
+        return await User.create({
+          ...user,
+          ...(!user.email && {
+            email: `${kebabCase(user.name)}.${kebabCase(
+              user.lastname,
+            )}@ssdp.net`,
+          }),
+          password: user.password
+            ? await bcrypt.hash(user.password, 10)
+            : await bcrypt.hash('1234', 10),
+        });
+      }),
+    );
 
     // add hotels to DB
-    await Promise.all(hotelsJSON.map(async hotel => {
-      return await Hotel.create({
-        ...hotel,
-      });
-    }));
+    await Promise.all(
+      hotelsJSON.map(async hotel => {
+        return await Hotel.create({
+          ...hotel,
+        });
+      }),
+    );
 
     // add visits to DB
-    await Promise.all(visitsJSON.map(async visit => {
-      const date = moment(visit.date, 'D/M/YYYY')
-        .utc()
-        .valueOf();
+    await Promise.all(
+      visitsJSON.map(async visit => {
+        const date = moment(visit.date, 'D/M/YYYY')
+          .utc()
+          .valueOf();
 
-      return await Visit.create({
-        ...visit,
-        date,
-        status: 1,
-        rate: parseFloat(visit.rate.toString().replace(',', '.')),
-      });
-    }));
+        return await Visit.create({
+          ...visit,
+          date,
+          status: 1,
+          rate: parseFloat(visit.rate.toString().replace(',', '.')),
+        });
+      }),
+    );
 
     // add vehicles to DB
-    await Promise.all(vehiclesJSON.map(async vehicle => {
-      return await Vehicle.create({
-        ...vehicle,
-      });
-    }));
+    await Promise.all(
+      vehiclesJSON.map(async vehicle => {
+        return await Vehicle.create({
+          ...vehicle,
+        });
+      }),
+    );
 
     return;
   })
