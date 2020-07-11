@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import express from 'express';
+import express, { Response } from 'express';
 import generateToken from '../helpers/generateToken';
 import Role from '../models/Role';
 import Sector from '../models/Sector';
@@ -9,12 +9,12 @@ const router = express.Router({ mergeParams: true });
 
 router.post(
   '/login',
-  async (req, res): Promise<void> => {
+  async (req, res): Promise<Response<any>> => {
     const { email, password } = req.body;
     let matchPwd;
 
     if (!email || !password) {
-      res
+      return res
         .status(400)
         .json({ error: 'Veuillez entrer un Mot de passe et un Email valide.' });
     }
@@ -30,8 +30,7 @@ router.post(
     }
 
     if (!userFound || !matchPwd) {
-      res.status(400).json({ error: 'Email ou Mot de passe invalide.' });
-      return;
+      return res.status(400).json({ error: 'Email ou Mot de passe invalide.' });
     }
 
     const token = generateToken({
@@ -49,7 +48,7 @@ router.post(
       },
     });
 
-    res.status(200).json({ token });
+    return res.status(200).json({ token });
   },
 );
 
